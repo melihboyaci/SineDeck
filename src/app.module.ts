@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MoviesModule } from './movies/movies.module';
+import { GenresModule } from './genres/genres.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { MoviesModule } from './movies/movies.module';
       synchronize: true,
       
     }),
-    MoviesModule
+    MoviesModule,
+    GenresModule
   ],
   controllers: [AppController],
   providers: [AppService],
