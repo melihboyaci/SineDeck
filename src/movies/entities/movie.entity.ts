@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Genre } from '../../genres/entities/genre.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('movies')
 export class Movie {
@@ -15,5 +22,9 @@ export class Movie {
   releaseYear: number;
 
   @Column({ nullable: true })
-  posterUrl: string;
+  posterUrl?: string;
+
+  @ManyToMany(() => Genre, (genre) => genre.movies, { cascade: false })
+  @JoinTable()
+  genres: Genre[];
 }

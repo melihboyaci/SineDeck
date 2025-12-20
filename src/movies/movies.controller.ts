@@ -11,6 +11,7 @@ import {
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { SetMovieGenresDto } from './dto/set-movie-genres.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -33,8 +34,19 @@ export class MoviesController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateMovieDto: UpdateMovieDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateMovieDto: UpdateMovieDto,
+  ) {
     return this.moviesService.update(+id, updateMovieDto);
+  }
+
+  @Patch(':id/genres')
+  setGenres(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: SetMovieGenresDto,
+  ) {
+    return this.moviesService.setGenres(id, dto);
   }
 
   @Delete(':id')

@@ -1,19 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Genre } from './entities/genre.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class GenresService {
-  create(createGenreDto: CreateGenreDto) {
-    return 'This action adds a new genre';
+  constructor(
+    @InjectRepository(Genre)
+    private readonly genreRepo: Repository<Genre>,
+  ) {}
+
+  async create(createGenreDto: CreateGenreDto) {
+    const exists = await this.genreRepo.findOne({
+      where: { name: createGenreDto.name },
+    });
+
+    if (exists) {
+      throw new ConflictException('Genre already exists');
+    }
+
+    const genre = this.genreRepo.create(createGenreDto);
+    return this.genreRepo.save(genre);
   }
 
+  // async yazmadık çünkü find metodu zaten promise döndürüyor, eğer find gerçek veri döndürüyor olsaydı async kullanmamız gerekirdi
   findAll() {
-    return `This action returns all genres`;
+    return this.genreRepo.find({ order: { name: 'ASC' } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} genre`;
+  async findOne(id: number) {
+    const genre = await this.genreRepo.findOneBy({id});
+    if(!genre) {
+      throw new NotFoundException(`Genre ${id} not found`);
+    }
+    return genre;
   }
 
   update(id: number, updateGenreDto: UpdateGenreDto) {
