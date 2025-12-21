@@ -1,3 +1,4 @@
+import { Series } from '../../series/entities/series.entity';
 import { Movie } from '../../movies/entities/movie.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -11,4 +12,7 @@ export class Genre {
 
   @ManyToMany(() => Movie, (movie) => movie.genres)
   movies: Movie[];
+
+  @ManyToMany(() => Series, (series) => series.genres)
+  series: Series[];
 }
