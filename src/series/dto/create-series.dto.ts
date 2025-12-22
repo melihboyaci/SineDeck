@@ -23,6 +23,10 @@ export class CreateSeriesDto {
   @IsOptional()
   endYear?: number;
 
+  @IsString()
+  @IsOptional()
+  creator?: string;
+
   @IsOptional()
   @IsUrl()
   posterUrl?: string;

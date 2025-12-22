@@ -33,17 +33,25 @@ export class EpisodesService {
       season: season,
     });
 
-    return await 'This action adds a new episode';
+    return await this.episodeRepo.save(newEpisode);
   }
 
   async findAll() {
     return await this.episodeRepo.find({
-      relations: ['seasons'], //hangi sezona ait?
+      relations: ['season'], //hangi sezona ait?
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} episode`;
+  async findOne(id: number) {
+    const episode = await this.episodeRepo.findOne({
+      where: { id },
+      relations: ['season', 'season.series'],
+    });
+
+    if (!episode) {
+      throw new NotFoundException(`Episode #${id} not found`);
+    }
+    return episode;
   }
 
   update(id: number, updateEpisodeDto: UpdateEpisodeDto) {

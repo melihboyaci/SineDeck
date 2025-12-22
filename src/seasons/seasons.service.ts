@@ -42,8 +42,16 @@ export class SeasonsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} season`;
+  async findOne(id: number) {
+    const season = await this.seasonRepo.findOne({
+      where: { id },
+      relations: ['series', 'episodes'],
+    });
+
+    if (!season) {
+      throw new NotFoundException(`Season #${id} not found`);
+    }
+    return season;
   }
 
   update(id: number, updateSeasonDto: UpdateSeasonDto) {

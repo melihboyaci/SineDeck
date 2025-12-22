@@ -1,7 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { SeriesService } from './series.service';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
+import { SetSeriesGenresDto } from './dto/set-series-genres.dto';
 
 @Controller('series')
 export class SeriesController {
@@ -12,13 +22,21 @@ export class SeriesController {
     return this.seriesService.create(createSeriesDto);
   }
 
+  @Patch(':id/genres')
+  setGenres(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() setSeriesGenresDto: SetSeriesGenresDto,
+  ) {
+    return this.seriesService.setGenres(id, setSeriesGenresDto);
+  }
+
   @Get()
   findAll() {
     return this.seriesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.seriesService.findOne(+id);
   }
 

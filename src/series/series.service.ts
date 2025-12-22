@@ -1,15 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Series } from './entities/series.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { Genre } from 'src/genres/entities/genre.entity';
+import { SetSeriesGenresDto } from './dto/set-series-genres.dto';
 
 @Injectable()
 export class SeriesService {
   constructor(
     @InjectRepository(Series)
     private readonly seriesRepo: Repository<Series>,
+
+    @InjectRepository(Genre)
+    private readonly genreRepo: Repository<Genre>,
   ) {}
 
   async create(createSeriesDto: CreateSeriesDto) {
@@ -20,16 +29,16 @@ export class SeriesService {
 
   async findAll() {
     return await this.seriesRepo.find({
-      relations: ['seasons', 'genres'], 
+      relations: ['seasons', 'seasons.episodes', 'genres'],
       //diziyi çekerken sezonları ve türleri de getir
     });
   }
 
   async findOne(id: number) {
     return await this.seriesRepo.findOne({
-      where: {id},
-      relations: ['seasons', 'seasons.episodes']
-      //detayda sezonları ve bölümleri getir
+      where: { id },
+      relations: ['seasons', 'seasons.episodes', 'genres'],
+      //detayda sezonları, bölümleri ve türleri getir
     });
   }
 
@@ -39,5 +48,27 @@ export class SeriesService {
 
   remove(id: number) {
     return `This action removes a #${id} series`;
+  }
+
+  async setGenres(seriesId: number, dto: SetSeriesGenresDto) {
+    const series = await this.seriesRepo.findOne({
+      where: { id: seriesId },
+      relations: { genres: true },
+    });
+
+    if (!series) {
+      throw new NotFoundException(`Series ${seriesId} not found`);
+    }
+
+    const genres = await this.genreRepo.find({
+      where: { id: In(dto.genreIds) },
+    });
+
+    if (genres.length !== dto.genreIds.length) {
+      throw new BadRequestException('One or more GenreIds are invalid');
+    }
+
+    series.genres = genres;
+    return this.seriesRepo.save(series);
   }
 }
