@@ -35,19 +35,25 @@ export class SeriesService {
   }
 
   async findOne(id: number) {
-    return await this.seriesRepo.findOne({
+    const series = await this.seriesRepo.findOne({
       where: { id },
       relations: ['seasons', 'seasons.episodes', 'genres'],
       //detayda sezonları, bölümleri ve türleri getir
     });
+    if (!series) {
+      throw new NotFoundException(`Series ${id} not found`);
+    }
+    return series;
   }
 
   update(id: number, updateSeriesDto: UpdateSeriesDto) {
     return `This action updates a #${id} series`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} series`;
+  async remove(id: number) {
+    const series = await this.findOne(id);
+    await this.seriesRepo.delete(id);
+    return { deleted: true, id };
   }
 
   async setGenres(seriesId: number, dto: SetSeriesGenresDto) {

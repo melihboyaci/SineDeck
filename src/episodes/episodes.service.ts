@@ -58,7 +58,9 @@ export class EpisodesService {
     return `This action updates a #${id} episode`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} episode`;
+  async remove(id: number) {
+    const episode = this.findOne(id);
+    await this.episodeRepo.delete(id);
+    return { deleted: true, id };
   }
 }

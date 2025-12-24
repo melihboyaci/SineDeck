@@ -7,6 +7,8 @@ import { GenresModule } from './genres/genres.module';
 import { SeriesModule } from './series/series.module';
 import { SeasonsModule } from './seasons/seasons.module';
 import { EpisodesModule } from './episodes/episodes.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { EpisodesModule } from './episodes/episodes.module';
     GenresModule,
     SeriesModule,
     SeasonsModule,
-    EpisodesModule
+    EpisodesModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],

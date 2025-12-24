@@ -7,6 +7,8 @@ import {
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('series') //ne işe yarar: Bu dekoratör, Series sınıfını bir veritabanı tablosu olarak tanımlar ve tablo adını 'series' olarak belirler.
@@ -17,7 +19,7 @@ export class Series {
   @Column()
   title: string;
 
-  @Column()
+  @Column({ type: 'text' })
   description: string;
 
   @Column()
@@ -40,4 +42,10 @@ export class Series {
   @ManyToMany(() => Genre, (genre) => genre.series, { cascade: false })
   @JoinTable()
   genres: Genre[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

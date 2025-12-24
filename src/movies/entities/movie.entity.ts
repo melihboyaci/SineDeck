@@ -5,6 +5,8 @@ import {
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('movies')
@@ -27,4 +29,10 @@ export class Movie {
   @ManyToMany(() => Genre, (genre) => genre.movies, { cascade: false })
   @JoinTable()
   genres: Genre[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

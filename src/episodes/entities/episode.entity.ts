@@ -1,5 +1,12 @@
 import { Season } from '../../seasons/entities/season.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('episodes')
 export class Episode {
@@ -20,4 +27,10 @@ export class Episode {
 
   @ManyToOne(() => Season, (season) => season.episodes, { onDelete: 'CASCADE' })
   season: Season;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

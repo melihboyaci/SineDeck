@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGenreDto } from './dto/create-genre.dto';
 import { UpdateGenreDto } from './dto/update-genre.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,8 +35,8 @@ export class GenresService {
   }
 
   async findOne(id: number) {
-    const genre = await this.genreRepo.findOneBy({id});
-    if(!genre) {
+    const genre = await this.genreRepo.findOneBy({ id });
+    if (!genre) {
       throw new NotFoundException(`Genre ${id} not found`);
     }
     return genre;
@@ -42,7 +46,9 @@ export class GenresService {
     return `This action updates a #${id} genre`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} genre`;
+  async remove(id: number) {
+    const genre = this.findOne(id);
+    await this.genreRepo.delete(id);
+    return { deleted: true, id };
   }
 }

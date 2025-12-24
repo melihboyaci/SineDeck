@@ -6,6 +6,8 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('seasons')
@@ -16,7 +18,7 @@ export class Season {
   @Column()
   seasonNumber: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   description?: string;
 
   // onDelete: 'CASCADE' -> Eğer Dizi silinirse, bu sezon da veritabanından silinsin.
@@ -26,4 +28,10 @@ export class Season {
   // cascade: true -> Sezon kaydedildiğinde veya güncellendiğinde, içindeki bölümler de otomatik olarak kaydedilir/güncellenir.
   @OneToMany(() => Episode, (episode) => episode.season, { cascade: true })
   episodes: Episode[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

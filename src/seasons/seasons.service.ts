@@ -58,7 +58,9 @@ export class SeasonsService {
     return `This action updates a #${id} season`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} season`;
+  async remove(id: number) {
+    const season = this.findOne(id);
+    await this.seasonRepo.delete(id);
+    return { deleted: true, id };
   }
 }
