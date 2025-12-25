@@ -29,6 +29,8 @@ export class SeriesController {
     return this.seriesService.create(createSeriesDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
   @Patch(':id/genres')
   setGenres(
     @Param('id', ParseIntPipe) id: number,
@@ -47,6 +49,8 @@ export class SeriesController {
     return this.seriesService.findOne(+id);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.EDITOR)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateSeriesDto: UpdateSeriesDto) {
     return this.seriesService.update(+id, updateSeriesDto);
