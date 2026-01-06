@@ -39,4 +39,12 @@ export class CreateMovieDto {
   @IsOptional()
   @IsUrl()
   posterUrl?: string;
+
+  @ApiPropertyOptional({
+    example: 'Film açıklaması...',
+    description: 'Film özeti ve detayları',
+  })
+  @IsOptional()
+  @IsString()
+  description?: string;
 }

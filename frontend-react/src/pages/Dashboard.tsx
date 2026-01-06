@@ -38,7 +38,7 @@ function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Başlık ve İstatistikler */}
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white shadow-lg">
+      {/*<div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-3">
@@ -56,7 +56,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </div>*/}
 
       {/* Film Listesi */}
       {movies.length > 0 ? (

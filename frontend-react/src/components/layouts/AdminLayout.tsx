@@ -1,7 +1,14 @@
 import { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { Navigate, Outlet, NavLink } from "react-router-dom";
-import { HiFilm, HiHome, HiLogout, HiUser } from "react-icons/hi";
+import {
+  HiFilm,
+  HiHome,
+  HiLogout,
+  HiUser,
+  HiCog,
+  HiUserGroup,
+} from "react-icons/hi";
 
 export default function AdminLayout() {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -10,9 +17,19 @@ export default function AdminLayout() {
     return <Navigate to="/login" />;
   }
 
+  const isAdmin = user?.role === "admin";
+
   const menuItems = [
     { to: "/", icon: HiHome, label: "Ana Sayfa" },
     { to: "/movies", icon: HiFilm, label: "Filmler" },
+    { to: "/series", icon: HiFilm, label: "Diziler" },
+  ];
+
+  // Admin için ek menü öğesi
+  const adminMenuItems = [
+    ...menuItems,
+    { to: "/admin/movies", icon: HiCog, label: "Yönetim Paneli" },
+    { to: "/admin/users", icon: HiUserGroup, label: "Kullanıcı Paneli" },
   ];
 
   return (
@@ -20,7 +37,7 @@ export default function AdminLayout() {
       {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">
         {/* Logo - Sol */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 flex-1">
           <div className="flex items-center gap-2">
             <HiFilm className="text-2xl text-purple-600" />
             <span className="text-xl font-bold text-gray-800 dark:text-white">
@@ -29,24 +46,49 @@ export default function AdminLayout() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden sm:flex items-center gap-1">
-            {menuItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) =>
-                  `flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    isActive
-                      ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 font-medium"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  }`
-                }
-              >
-                <item.icon className="text-lg" />
-                {item.label}
-              </NavLink>
-            ))}
+          <nav className="hidden sm:flex items-center gap-2 flex-1">
+            <div className="flex items-center gap-1">
+              {menuItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === "/"}
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      isActive
+                        ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 font-medium"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    }`
+                  }
+                >
+                  <item.icon className="text-lg" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+            {isAdmin && (
+              <div className="ml-auto flex items-center gap-1">
+                {adminMenuItems
+                  .slice(menuItems.length)
+                  .map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.to === "/"}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          isActive
+                            ? "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 font-medium"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        }`
+                      }
+                    >
+                      <item.icon className="text-lg" />
+                      {item.label}
+                    </NavLink>
+                  ))}
+              </div>
+            )}
           </nav>
         </div>
 
@@ -74,7 +116,7 @@ export default function AdminLayout() {
       {/* Mobile Navigation */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
         <nav className="flex justify-around">
-          {menuItems.map((item) => (
+          {(isAdmin ? adminMenuItems : menuItems).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

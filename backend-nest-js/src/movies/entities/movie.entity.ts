@@ -26,6 +26,9 @@ export class Movie {
   @Column({ nullable: true })
   posterUrl?: string;
 
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
   @ManyToMany(() => Genre, (genre) => genre.movies, { cascade: false })
   @JoinTable()
   genres: Genre[];
