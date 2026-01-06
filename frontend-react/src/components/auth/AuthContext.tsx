@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "../../types/User";
 
 /**
@@ -19,9 +19,45 @@ interface AuthContextType {
  * 3. Varsayılan Değerler: Context henüz bir Provider ile sarmalanmadığında
  * kullanılacak başlangıç değerlerini veriyoruz.
  */
-export const AuhthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   login: () => {},
   logout: () => {},
 });
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const username = localStorage.getItem("username");
+    const role = localStorage.getItem("role");
+
+    if (token && username) {
+      setUser({ username, role: role || "user" });
+    }
+  }, []);
+
+  const login = (token: string, username: string, role: string) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("username", username);
+    localStorage.setItem("role", role);
+    setUser({ username, role });
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ user, isAuthenticated: !!user, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
