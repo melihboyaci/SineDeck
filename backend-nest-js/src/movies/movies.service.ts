@@ -30,7 +30,10 @@ export class MoviesService {
   }
 
   findAll() {
-    return this.movieRepo.find();
+    return this.movieRepo.find({
+      relations: { genres: true },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async findOne(id: number) {

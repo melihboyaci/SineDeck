@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { Movie } from "../../types/Movie";
 import { toast } from "react-toastify";
 import api from "../../helper/api";
-import { Table, Button, Spinner } from "flowbite-react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../components/auth/AuthContext";
+import { HiFilm, HiPencil, HiTrash, HiPlus } from "react-icons/hi";
+import { LoadingSpinner, PageHeader, EmptyState } from "../../components/ui";
 
 function MovieList() {
+  const { user } = useContext(AuthContext);
+  const isAdmin = user?.role === "admin";
+
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,69 +43,85 @@ function MovieList() {
     }
   };
 
-  if (loading)
-    return (
-      <div className="text-center mt-10">
-        <Spinner size="xl" />
-      </div>
-    );
+  if (loading) {
+    return <LoadingSpinner message="Filmler yükleniyor..." />;
+  }
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Film Yönetimi
-        </h2>
-        <Link to="/admin/add-movie">
-          <Button color="purple">+ Yeni Film Ekle</Button>
-        </Link>
-      </div>
+    <div className="max-w-6xl mx-auto">
+      <PageHeader
+        title="Film Yönetimi"
+        subtitle={`${movies.length} film kayıtlı`}
+        icon={HiFilm}
+        action={
+          <Link to="/admin/add-movie">
+            <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors">
+              <HiPlus /> Yeni Film Ekle
+            </button>
+          </Link>
+        }
+      />
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-              <th className="px-6 py-3">ID</th>
-              <th className="px-6 py-3">Film Adı</th>
-              <th className="px-6 py-3">Yıl</th>
-              <th className="px-6 py-3">İşlemler</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {movies.map((movie) => (
-              <tr
-                key={movie.id}
-                className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                <td className="px-6 py-4">{movie.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                  {movie.title}
-                </td>
-                <td className="px-6 py-4">{movie.releaseYear}</td>
-                <td className="px-6 py-4">
-                  <div className="flex gap-2">
-                    {/* Düzenleme Sayfasına Git */}
-                    <Link to={`/admin/edit-movie/${movie.id}`}>
-                      <Button size="xs" color="light">
-                        Düzenle
-                      </Button>
-                    </Link>
-
-                    {/* Silme Butonu */}
-                    <Button
-                      size="xs"
-                      color="failure"
-                      onClick={() => handleDelete(movie.id)}
-                    >
-                      Sil
-                    </Button>
+      {movies.length === 0 ? (
+        <EmptyState
+          icon={HiFilm}
+          title="Henüz film eklenmemiş"
+          subtitle="Yeni film eklemek için yukarıdaki butonu kullanın."
+        />
+      ) : (
+        <div className="space-y-3">
+          {movies.map((movie) => (
+            <div
+              key={movie.id}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+            >
+              <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <div className="flex items-center gap-4">
+                  {movie.posterUrl ? (
+                    <img
+                      src={movie.posterUrl}
+                      alt={movie.title}
+                      className="w-10 h-14 object-cover rounded shadow-sm border border-gray-200 dark:border-gray-700"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "https://via.placeholder.com/150?text=Afiş+Yok";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-10 h-14 bg-purple-100 dark:bg-purple-900/30 rounded flex items-center justify-center border border-gray-200 dark:border-gray-700">
+                      <HiFilm className="text-purple-600" />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {movie.title}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {movie.releaseYear} • {movie.director}
+                    </p>
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link to={`/admin/edit-movie/${movie.id}`}>
+                    <button className="p-2 rounded-lg text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 transition-colors">
+                      <HiPencil className="text-lg" />
+                    </button>
+                  </Link>
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleDelete(movie.id)}
+                      className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      <HiTrash className="text-lg" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

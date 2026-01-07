@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import api from "../../helper/api";
 import { HiPencil } from "react-icons/hi";
@@ -14,7 +14,7 @@ import {
   PosterUpload,
 } from "../../components/ui";
 
-function EditMovie() {
+function EditSeries() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -24,42 +24,46 @@ function EditMovie() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    director: "",
-    releaseYear: "",
+    startYear: "",
+    endYear: "",
+    creator: "",
     posterUrl: "",
   });
 
   useEffect(() => {
-    const fetchMovie = async () => {
+    const fetchSeries = async () => {
       try {
-        const response = await api.get(`/movies/${id}`);
+        const response = await api.get(`/series/${id}`);
         setFormData({
           title: response.data.title ?? "",
           description: response.data.description ?? "",
-          director: response.data.director ?? "",
-          releaseYear:
-            response.data.releaseYear != null
-              ? String(response.data.releaseYear)
+          startYear:
+            response.data.startYear != null
+              ? String(response.data.startYear)
               : "",
-          posterUrl: response.data.posterUrl || "",
+          endYear:
+            response.data.endYear != null ? String(response.data.endYear) : "",
+          creator: response.data.creator ?? "",
+          posterUrl: response.data.posterUrl ?? "",
         });
-        if (response.data.genres) {
+        // Mevcut türleri yükle
+        if (response.data.genres && response.data.genres.length > 0) {
           setSelectedGenreIds(
             response.data.genres.map((g: { id: number }) => g.id)
           );
         }
       } catch (error) {
-        toast.error("Film yüklenirken hata oluştu!");
-        navigate("/admin/movies");
+        toast.error("Dizi yüklenirken hata oluştu!");
+        navigate("/admin/series");
       } finally {
         setLoading(false);
       }
     };
-    fetchMovie();
+    fetchSeries();
   }, [id, navigate]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -69,20 +73,22 @@ function EditMovie() {
     setSubmitting(true);
 
     try {
-      await api.patch(`/movies/${id}`, {
+      await api.patch(`/series/${id}`, {
         title: formData.title,
-        director: formData.director,
         description: formData.description,
-        releaseYear: Number(formData.releaseYear),
+        startYear: Number(formData.startYear),
+        ...(formData.endYear
+          ? { endYear: Number(formData.endYear) }
+          : { endYear: null }),
+        ...(formData.creator ? { creator: formData.creator } : {}),
         ...(formData.posterUrl ? { posterUrl: formData.posterUrl } : {}),
       });
 
-      await api.patch(`/movies/${id}/genres`, {
-        genreIds: selectedGenreIds,
-      });
+      // Türleri güncelle
+      await api.patch(`/series/${id}/genres`, { genreIds: selectedGenreIds });
 
-      toast.success("Film başarıyla güncellendi!");
-      navigate("/admin/movies");
+      toast.success("Dizi başarıyla güncellendi!");
+      navigate("/admin/series");
     } catch (error) {
       toast.error("Güncelleme başarısız.");
     } finally {
@@ -91,22 +97,22 @@ function EditMovie() {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Film yükleniyor..." />;
+    return <LoadingSpinner message="Dizi yükleniyor..." />;
   }
 
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader
-        title="Film Düzenle"
-        subtitle="Film bilgilerini güncelleyin"
+        title="Dizi Düzenle"
+        subtitle="Dizi bilgilerini güncelleyin"
         icon={HiPencil}
-        backUrl="/admin/movies"
+        backUrl="/admin/series"
       />
 
       <FormCard onSubmit={handleSubmit}>
         <FormInput
           id="title"
-          label="Film Adı"
+          label="Dizi Adı"
           required
           value={formData.title}
           onChange={handleChange}
@@ -114,40 +120,45 @@ function EditMovie() {
 
         <FormTextarea
           id="description"
-          label="Film Özeti"
+          label="Dizi Özeti"
           required
           rows={4}
           value={formData.description}
           onChange={handleChange}
         />
 
+        <FormInput
+          id="creator"
+          label="Yapımcı / Yaratıcı"
+          optional
+          value={formData.creator}
+          onChange={handleChange}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
-            id="director"
-            label="Yönetmen"
+            id="startYear"
+            label="Başlangıç Yılı"
+            type="number"
             required
-            value={formData.director}
+            value={formData.startYear}
             onChange={handleChange}
           />
           <FormInput
-            id="releaseYear"
-            label="Vizyon Yılı"
+            id="endYear"
+            label="Bitiş Yılı"
             type="number"
-            required
-            value={formData.releaseYear}
+            placeholder="Devam ediyorsa boş bırakın"
+            optional
+            value={formData.endYear}
             onChange={handleChange}
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            Türler
-          </label>
-          <GenreSelector
-            selectedGenreIds={selectedGenreIds}
-            onChange={setSelectedGenreIds}
-          />
-        </div>
+        <GenreSelector
+          selectedGenreIds={selectedGenreIds}
+          onChange={setSelectedGenreIds}
+        />
 
         <PosterUpload
           value={formData.posterUrl}
@@ -162,11 +173,16 @@ function EditMovie() {
             type="button"
             variant="secondary"
             fullWidth
-            onClick={() => navigate("/admin/movies")}
+            onClick={() => navigate("/admin/series")}
           >
             İptal
           </Button>
-          <Button type="submit" fullWidth disabled={submitting}>
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            disabled={submitting}
+          >
             {submitting ? "Güncelleniyor..." : "Değişiklikleri Kaydet"}
           </Button>
         </div>
@@ -175,4 +191,4 @@ function EditMovie() {
   );
 }
 
-export default EditMovie;
+export default EditSeries;

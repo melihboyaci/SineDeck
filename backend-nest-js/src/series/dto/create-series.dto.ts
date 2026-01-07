@@ -1,11 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateSeriesDto {
   @ApiProperty({ example: 'Breaking Bad', description: 'Dizi başlığı' })
@@ -44,9 +38,9 @@ export class CreateSeriesDto {
 
   @ApiPropertyOptional({
     example: 'https://example.com/poster.jpg',
-    description: 'Dizi afişi URL',
+    description: 'Dizi afişi URL veya dosya yolu',
   })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   posterUrl?: string;
 }

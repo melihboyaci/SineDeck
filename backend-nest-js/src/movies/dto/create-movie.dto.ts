@@ -1,13 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsInt,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsInt, IsOptional, IsString, Length, Max, Min } from 'class-validator';
 
 export class CreateMovieDto {
   @ApiProperty({
@@ -34,10 +26,10 @@ export class CreateMovieDto {
 
   @ApiPropertyOptional({
     example: 'https://example.com/poster.jpg',
-    description: 'Film afişi URL',
+    description: 'Film afişi URL veya dosya yolu',
   })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   posterUrl?: string;
 
   @ApiPropertyOptional({

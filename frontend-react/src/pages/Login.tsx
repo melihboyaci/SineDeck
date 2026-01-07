@@ -1,9 +1,9 @@
-import { Button, Card, Label, TextInput } from "flowbite-react";
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../components/auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../helper/api";
 import { toast } from "react-toastify";
+import { FormInput, Button } from "../components/ui";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -27,49 +27,47 @@ function Login() {
   };
 
   return (
-    <Card className="w-full">
+    <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
-        SineDeck Giriş
+        Giriş Yap
       </h2>
 
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div>
-          {/* Kullanıcı Adı Kutusu */}
-          <div className="mb-2 block">
-            <Label htmlFor="username">Kullanıcı Adı</Label>
-          </div>
-          <TextInput
-            id="username"
-            type="text"
-            placeholder="Kullanıcı adınızı girin"
-            required
-            // Kullanıcı klavyeye bastıkça (onChange), hafızadaki değişkeni (setUsername) güncelliyoruz.
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
+        <FormInput
+          id="username"
+          label="Kullanıcı Adı"
+          type="text"
+          placeholder="Kullanıcı adınızı girin"
+          required
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
 
-        {/* Şifre Kutusu */}
-        <div>
-          <div className="mb-2 block">
-            <Label htmlFor="password">Şifre</Label>
-          </div>
-          <TextInput
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+        <FormInput
+          id="password"
+          label="Şifre"
+          type="password"
+          placeholder="••••••••"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        {/* Giriş Butonu */}
-        <Button type="submit" color="purple" className="w-full">
+        <Button type="submit" variant="primary" fullWidth>
           Giriş Yap
         </Button>
       </form>
-    </Card>
+
+      <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+        Hesabınız yok mu?{" "}
+        <Link
+          to="/register"
+          className="text-purple-600 hover:text-purple-700 font-medium"
+        >
+          Kayıt Ol
+        </Link>
+      </p>
+    </div>
   );
 }
 

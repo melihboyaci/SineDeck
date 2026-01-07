@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../helper/api";
@@ -13,7 +13,7 @@ import {
   PosterUpload,
 } from "../../components/ui";
 
-function AddMovie() {
+function AddSeries() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedGenreIds, setSelectedGenreIds] = useState<number[]>([]);
@@ -21,13 +21,14 @@ function AddMovie() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    director: "",
-    releaseYear: String(new Date().getFullYear()),
+    startYear: String(new Date().getFullYear()),
+    endYear: "",
+    creator: "",
     posterUrl: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -38,26 +39,27 @@ function AddMovie() {
     setLoading(true);
 
     try {
-      const response = await api.post("/movies", {
+      const response = await api.post("/series", {
         title: formData.title,
-        description: formData.description,
-        director: formData.director,
-        releaseYear: Number(formData.releaseYear),
+        startYear: Number(formData.startYear),
+        ...(formData.description ? { description: formData.description } : {}),
+        ...(formData.endYear ? { endYear: Number(formData.endYear) } : {}),
+        ...(formData.creator ? { creator: formData.creator } : {}),
         ...(formData.posterUrl ? { posterUrl: formData.posterUrl } : {}),
       });
 
       // Türleri ata
       if (selectedGenreIds.length > 0) {
-        await api.patch(`/movies/${response.data.id}/genres`, {
+        await api.patch(`/series/${response.data.id}/genres`, {
           genreIds: selectedGenreIds,
         });
       }
 
-      toast.success("Film başarıyla eklendi");
-      navigate("/admin/movies");
+      toast.success("Dizi başarıyla eklendi");
+      navigate("/admin/series");
     } catch (error) {
       console.error(error);
-      toast.error("Film eklenirken bir hata oluştu.");
+      toast.error("Dizi eklenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
@@ -66,17 +68,17 @@ function AddMovie() {
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader
-        title="Yeni Film Ekle"
-        subtitle="Film bilgilerini girin"
+        title="Yeni Dizi Ekle"
+        subtitle="Dizi bilgilerini girin"
         icon={HiFilm}
-        backUrl="/admin/movies"
+        backUrl="/admin/series"
       />
 
       <FormCard onSubmit={handleSubmit}>
         <FormInput
           id="title"
-          label="Film Adı"
-          placeholder="Örn: The Matrix"
+          label="Dizi Adı"
+          placeholder="Örn: Breaking Bad"
           required
           value={formData.title}
           onChange={handleChange}
@@ -84,29 +86,39 @@ function AddMovie() {
 
         <FormTextarea
           id="description"
-          label="Film Özeti"
-          placeholder="Filmin konusu nedir?"
+          label="Dizi Özeti"
+          placeholder="Dizinin konusu nedir?"
           required
           rows={4}
           value={formData.description}
           onChange={handleChange}
         />
 
+        <FormInput
+          id="creator"
+          label="Yapımcı / Yaratıcı"
+          placeholder="Örn: Vince Gilligan"
+          optional
+          value={formData.creator}
+          onChange={handleChange}
+        />
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
-            id="director"
-            label="Yönetmen"
-            placeholder="Christopher Nolan"
+            id="startYear"
+            label="Başlangıç Yılı"
+            type="number"
             required
-            value={formData.director}
+            value={formData.startYear}
             onChange={handleChange}
           />
           <FormInput
-            id="releaseYear"
-            label="Vizyon Yılı"
+            id="endYear"
+            label="Bitiş Yılı"
             type="number"
-            required
-            value={formData.releaseYear}
+            placeholder="Devam ediyorsa boş bırakın"
+            optional
+            value={formData.endYear}
             onChange={handleChange}
           />
         </div>
@@ -134,12 +146,12 @@ function AddMovie() {
             type="button"
             variant="secondary"
             fullWidth
-            onClick={() => navigate("/admin/movies")}
+            onClick={() => navigate("/admin/series")}
           >
             İptal
           </Button>
-          <Button type="submit" fullWidth disabled={loading}>
-            {loading ? "Kaydediliyor..." : "Filmi Kaydet"}
+          <Button type="submit" variant="primary" fullWidth disabled={loading}>
+            {loading ? "Kaydediliyor..." : "Diziyi Kaydet"}
           </Button>
         </div>
       </FormCard>
@@ -147,4 +159,4 @@ function AddMovie() {
   );
 }
 
-export default AddMovie;
+export default AddSeries;

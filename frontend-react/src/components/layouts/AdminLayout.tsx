@@ -8,6 +8,7 @@ import {
   HiUser,
   HiCog,
   HiUserGroup,
+  HiTag,
 } from "react-icons/hi";
 
 export default function AdminLayout() {
@@ -18,6 +19,8 @@ export default function AdminLayout() {
   }
 
   const isAdmin = user?.role === "admin";
+  const isEditor = user?.role === "editor";
+  const canManageContent = isAdmin || isEditor;
 
   const menuItems = [
     { to: "/", icon: HiHome, label: "Ana Sayfa" },
@@ -25,11 +28,18 @@ export default function AdminLayout() {
     { to: "/series", icon: HiFilm, label: "Diziler" },
   ];
 
-  // Admin için ek menü öğesi
-  const adminMenuItems = [
+  // Editor için içerik yönetimi (silme hariç)
+  const editorMenuItems = [
     ...menuItems,
-    { to: "/admin/movies", icon: HiCog, label: "Yönetim Paneli" },
-    { to: "/admin/users", icon: HiUserGroup, label: "Kullanıcı Paneli" },
+    { to: "/admin/movies", icon: HiCog, label: "Film Yönetimi" },
+    { to: "/admin/series", icon: HiCog, label: "Dizi Yönetimi" },
+    { to: "/admin/genres", icon: HiTag, label: "Tür Yönetimi" },
+  ];
+
+  // Admin için tüm yönetim (kullanıcı yönetimi dahil)
+  const adminMenuItems = [
+    ...editorMenuItems,
+    { to: "/admin/users", icon: HiUserGroup, label: "Kullanıcı Yönetimi" },
   ];
 
   return (
@@ -66,9 +76,9 @@ export default function AdminLayout() {
                 </NavLink>
               ))}
             </div>
-            {isAdmin && (
+            {canManageContent && (
               <div className="ml-auto flex items-center gap-1">
-                {adminMenuItems
+                {(isAdmin ? adminMenuItems : editorMenuItems)
                   .slice(menuItems.length)
                   .map((item) => (
                     <NavLink
@@ -116,7 +126,12 @@ export default function AdminLayout() {
       {/* Mobile Navigation */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
         <nav className="flex justify-around">
-          {(isAdmin ? adminMenuItems : menuItems).map((item) => (
+          {(isAdmin
+            ? adminMenuItems
+            : isEditor
+            ? editorMenuItems
+            : menuItems
+          ).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

@@ -1,11 +1,12 @@
 import type { Genre } from "./Genre";
 
-export interface Movie {
+export interface Series {
   id: number;
   title: string;
-  director: string;
-  releaseYear: number;
+  description: string;
+  startYear: number;
+  endYear?: number;
+  creator?: string;
   posterUrl?: string;
-  description?: string;
   genres?: Genre[];
 }
