@@ -20,17 +20,18 @@ function Movies() {
     }
   };
 
+  const fetchMovies = async () => {
+    try {
+      const response = await api.get("/movies");
+      setMovies(response.data);
+    } catch (error) {
+      console.error("Filmler yüklenemedi", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await api.get("/movies");
-        setMovies(response.data);
-      } catch (error) {
-        console.error("Filmler yüklenemedi", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchMovies();
   }, []);
 
@@ -78,6 +79,7 @@ function Movies() {
         type="movie"
         isOpen={!!selectedMovie}
         onClose={() => setSelectedMovie(null)}
+        onCollectionUpdated={fetchMovies}
       />
     </div>
   );

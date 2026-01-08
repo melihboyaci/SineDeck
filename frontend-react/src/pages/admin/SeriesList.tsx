@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import {
   HiFilm,
   HiPlus,
-  HiX,
   HiChevronDown,
   HiChevronRight,
   HiCollection,
@@ -17,15 +16,13 @@ import {
   HiTrash,
 } from "react-icons/hi";
 import { AuthContext } from "../../components/auth/AuthContext";
-import {
-  LoadingSpinner,
-  PageHeader,
-  EmptyState,
-  Modal,
-  Button,
-  FormInput,
-  FormTextarea,
-} from "../../components/ui";
+import SeasonForm, {
+  type SeasonFormData,
+} from "../../components/forms/SeasonForm";
+import EpisodeForm, {
+  type EpisodeFormData,
+} from "../../components/forms/EpisodeForm";
+import { LoadingSpinner, PageHeader } from "../../components/ui";
 
 function SeriesList() {
   const { user } = useContext(AuthContext);
@@ -47,24 +44,10 @@ function SeriesList() {
   // Modal states
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
   const [episodeModalOpen, setEpisodeModalOpen] = useState(false);
-  const [editingSeasonId, setEditingSeasonId] = useState<number | null>(null);
-  const [editingEpisodeId, setEditingEpisodeId] = useState<number | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Form data
-  const [seasonForm, setSeasonForm] = useState({
-    seasonNumber: "",
-    description: "",
-    seriesId: 0,
-  });
-
-  const [episodeForm, setEpisodeForm] = useState({
-    title: "",
-    episodeNumber: "",
-    description: "",
-    duration: "",
-    seasonId: 0,
-  });
+  const [currentSeason, setCurrentSeason] = useState<Season | null>(null);
+  const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
+  const [currentSeriesId, setCurrentSeriesId] = useState(0);
+  const [currentSeasonId, setCurrentSeasonId] = useState(0);
 
   const fetchSeries = async () => {
     try {
@@ -197,101 +180,59 @@ function SeriesList() {
 
   // Season Modal handlers
   const openAddSeasonModal = (seriesId: number) => {
-    setEditingSeasonId(null);
-    setSeasonForm({ seasonNumber: "", description: "", seriesId });
+    setCurrentSeason(null);
+    setCurrentSeriesId(seriesId);
     setSeasonModalOpen(true);
   };
 
   const openEditSeasonModal = (season: Season) => {
-    setEditingSeasonId(season.id);
-    setSeasonForm({
-      seasonNumber: String(season.seasonNumber),
-      description: season.description ?? "",
-      seriesId: season.series?.id ?? 0,
-    });
+    setCurrentSeason(season);
+    setCurrentSeriesId(season.series?.id ?? 0);
     setSeasonModalOpen(true);
   };
 
-  const handleSeasonSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
+  const handleSeasonSubmit = async (data: SeasonFormData) => {
     try {
-      const payload = {
-        seasonNumber: Number(seasonForm.seasonNumber),
-        description: seasonForm.description || undefined,
-        seriesId: seasonForm.seriesId,
-      };
-
-      if (editingSeasonId) {
-        await api.patch(`/seasons/${editingSeasonId}`, payload);
+      if (currentSeason) {
+        await api.patch(`/seasons/${currentSeason.id}`, data);
         toast.success("Sezon güncellendi!");
       } else {
-        await api.post("/seasons", payload);
+        await api.post("/seasons", data);
         toast.success("Sezon eklendi!");
       }
-
-      setSeasonModalOpen(false);
-      fetchSeasons(seasonForm.seriesId);
+      fetchSeasons(data.seriesId);
     } catch (error) {
       toast.error("İşlem başarısız!");
-    } finally {
-      setSubmitting(false);
+      throw error;
     }
   };
 
   // Episode Modal handlers
   const openAddEpisodeModal = (seasonId: number) => {
-    setEditingEpisodeId(null);
-    setEpisodeForm({
-      title: "",
-      episodeNumber: "",
-      description: "",
-      duration: "",
-      seasonId,
-    });
+    setCurrentEpisode(null);
+    setCurrentSeasonId(seasonId);
     setEpisodeModalOpen(true);
   };
 
   const openEditEpisodeModal = (episode: Episode) => {
-    setEditingEpisodeId(episode.id);
-    setEpisodeForm({
-      title: episode.title,
-      episodeNumber: String(episode.episodeNumber),
-      description: episode.description ?? "",
-      duration: String(episode.duration),
-      seasonId: episode.season?.id ?? 0,
-    });
+    setCurrentEpisode(episode);
+    setCurrentSeasonId(episode.season?.id ?? 0);
     setEpisodeModalOpen(true);
   };
 
-  const handleEpisodeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
+  const handleEpisodeSubmit = async (data: EpisodeFormData) => {
     try {
-      const payload = {
-        title: episodeForm.title,
-        episodeNumber: Number(episodeForm.episodeNumber),
-        description: episodeForm.description || undefined,
-        duration: Number(episodeForm.duration),
-        seasonId: episodeForm.seasonId,
-      };
-
-      if (editingEpisodeId) {
-        await api.patch(`/episodes/${editingEpisodeId}`, payload);
+      if (currentEpisode) {
+        await api.patch(`/episodes/${currentEpisode.id}`, data);
         toast.success("Bölüm güncellendi!");
       } else {
-        await api.post("/episodes", payload);
+        await api.post("/episodes", data);
         toast.success("Bölüm eklendi!");
       }
-
-      setEpisodeModalOpen(false);
-      fetchEpisodes(episodeForm.seasonId);
+      fetchEpisodes(data.seasonId);
     } catch (error) {
       toast.error("İşlem başarısız!");
-    } finally {
-      setSubmitting(false);
+      throw error;
     }
   };
 
@@ -340,8 +281,7 @@ function SeriesList() {
                     alt={item.title}
                     className="w-10 h-14 object-cover rounded shadow-sm border border-gray-200 dark:border-gray-700"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "";
+                      (e.target as HTMLImageElement).src = "";
                     }}
                   />
                 ) : (
@@ -544,148 +484,23 @@ function SeriesList() {
         )}
       </div>
 
-      {/* Season Modal */}
-      <Modal
+      {/* Season Form */}
+      <SeasonForm
         isOpen={seasonModalOpen}
         onClose={() => setSeasonModalOpen(false)}
-        title={editingSeasonId ? "Sezon Düzenle" : "Yeni Sezon Ekle"}
-        size="sm"
-      >
-        <form onSubmit={handleSeasonSubmit} className="space-y-4">
-          <FormInput
-            label="Sezon Numarası"
-            type="number"
-            required
-            min={1}
-            value={seasonForm.seasonNumber}
-            onChange={(e) =>
-              setSeasonForm({
-                ...seasonForm,
-                seasonNumber: e.target.value,
-              })
-            }
-          />
+        onSubmit={handleSeasonSubmit}
+        season={currentSeason}
+        seriesId={currentSeriesId}
+      />
 
-          <FormTextarea
-            label="Açıklama"
-            optional
-            rows={3}
-            value={seasonForm.description}
-            onChange={(e) =>
-              setSeasonForm({
-                ...seasonForm,
-                description: e.target.value,
-              })
-            }
-          />
-
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              fullWidth
-              onClick={() => setSeasonModalOpen(false)}
-            >
-              İptal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              disabled={submitting}
-            >
-              {submitting
-                ? "Kaydediliyor..."
-                : editingSeasonId
-                ? "Güncelle"
-                : "Ekle"}
-            </Button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Episode Modal */}
-      <Modal
+      {/* Episode Form */}
+      <EpisodeForm
         isOpen={episodeModalOpen}
         onClose={() => setEpisodeModalOpen(false)}
-        title={editingEpisodeId ? "Bölüm Düzenle" : "Yeni Bölüm Ekle"}
-        size="sm"
-      >
-        <form onSubmit={handleEpisodeSubmit} className="space-y-4">
-          <FormInput
-            label="Bölüm Numarası"
-            type="number"
-            required
-            min={1}
-            value={episodeForm.episodeNumber}
-            onChange={(e) =>
-              setEpisodeForm({
-                ...episodeForm,
-                episodeNumber: e.target.value,
-              })
-            }
-          />
-
-          <FormInput
-            label="Bölüm Başlığı"
-            type="text"
-            required
-            placeholder="Örn: Pilot"
-            value={episodeForm.title}
-            onChange={(e) =>
-              setEpisodeForm({ ...episodeForm, title: e.target.value })
-            }
-          />
-
-          <FormInput
-            label="Süre (dakika)"
-            type="number"
-            required
-            min={1}
-            placeholder="45"
-            value={episodeForm.duration}
-            onChange={(e) =>
-              setEpisodeForm({ ...episodeForm, duration: e.target.value })
-            }
-          />
-
-          <FormTextarea
-            label="Açıklama"
-            optional
-            rows={3}
-            value={episodeForm.description}
-            onChange={(e) =>
-              setEpisodeForm({
-                ...episodeForm,
-                description: e.target.value,
-              })
-            }
-          />
-
-          <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              fullWidth
-              onClick={() => setEpisodeModalOpen(false)}
-            >
-              İptal
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              fullWidth
-              disabled={submitting}
-            >
-              {submitting
-                ? "Kaydediliyor..."
-                : editingEpisodeId
-                ? "Güncelle"
-                : "Ekle"}
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        onSubmit={handleEpisodeSubmit}
+        episode={currentEpisode}
+        seasonId={currentSeasonId}
+      />
     </div>
   );
 }

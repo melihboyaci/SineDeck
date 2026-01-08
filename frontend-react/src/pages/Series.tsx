@@ -20,17 +20,18 @@ function SeriesPage() {
     }
   };
 
+  const fetchSeries = async () => {
+    try {
+      const response = await api.get("/series");
+      setSeries(response.data);
+    } catch (error) {
+      console.error("Diziler yüklenemedi", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchSeries = async () => {
-      try {
-        const response = await api.get("/series");
-        setSeries(response.data);
-      } catch (error) {
-        console.error("Diziler yüklenemedi", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchSeries();
   }, []);
 
@@ -78,6 +79,7 @@ function SeriesPage() {
         type="series"
         isOpen={!!selectedSeries}
         onClose={() => setSelectedSeries(null)}
+        onCollectionUpdated={fetchSeries}
       />
     </div>
   );

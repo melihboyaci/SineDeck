@@ -454,12 +454,14 @@ function Dashboard() {
         type="movie"
         isOpen={!!selectedMovie}
         onClose={() => setSelectedMovie(null)}
+        onCollectionUpdated={fetchData}
       />
       <MediaDetailModal
         item={selectedSeries}
         type="series"
         isOpen={!!selectedSeries}
         onClose={() => setSelectedSeries(null)}
+        onCollectionUpdated={fetchData}
       />
       <CollectionDetailModal
         collection={selectedCollection}

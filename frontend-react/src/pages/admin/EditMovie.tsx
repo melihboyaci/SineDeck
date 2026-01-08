@@ -3,7 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import api from "../../helper/api";
 import { HiPencil } from "react-icons/hi";
-import GenreSelector from "../../components/admin/GenreSelector";
+import GenreSelector from "../../components/forms/GenreSelector";
 import {
   PageHeader,
   FormCard,

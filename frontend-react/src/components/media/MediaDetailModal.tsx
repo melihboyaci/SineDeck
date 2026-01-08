@@ -21,6 +21,7 @@ type MediaDetailModalProps = {
   type: "movie" | "series";
   isOpen: boolean;
   onClose: () => void;
+  onCollectionUpdated?: () => void;
 };
 
 function MediaDetailModal({
@@ -28,6 +29,7 @@ function MediaDetailModal({
   type,
   isOpen,
   onClose,
+  onCollectionUpdated,
 }: MediaDetailModalProps) {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [showCollectionSelector, setShowCollectionSelector] = useState(false);
@@ -65,6 +67,7 @@ function MediaDetailModal({
       });
       toast.success("Koleksiyona eklendi!");
       setShowCollectionSelector(false);
+      onCollectionUpdated?.();
     } catch (error) {
       toast.error("Ekleme başarısız!");
     }
