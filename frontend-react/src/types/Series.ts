@@ -9,4 +9,6 @@ export interface Series {
   creator?: string;
   posterUrl?: string;
   genres?: Genre[];
+  createdAt?: string;
+  updatedAt?: string;
 }

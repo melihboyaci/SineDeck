@@ -46,7 +46,6 @@ function AddMovie() {
         ...(formData.posterUrl ? { posterUrl: formData.posterUrl } : {}),
       });
 
-      // Türleri ata
       if (selectedGenreIds.length > 0) {
         await api.patch(`/movies/${response.data.id}/genres`, {
           genreIds: selectedGenreIds,

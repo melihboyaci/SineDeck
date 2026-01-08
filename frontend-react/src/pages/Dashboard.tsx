@@ -52,9 +52,18 @@ function Dashboard() {
         api.get("/collections"),
       ]);
 
-      // Son 6 film ve dizi
+      // Son 6 film ve dizi (createdAt'e göre sıralanmış)
       setRecentMovies(moviesRes.data.slice(0, 6));
-      setRecentSeries(seriesRes.data.slice(0, 6));
+
+      // Dizileri createdAt'e göre sırala (en yeni önce)
+      const sortedSeries = [...seriesRes.data].sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      });
+      setRecentSeries(sortedSeries.slice(0, 6));
+
       setCollections(collectionsRes.data);
     } catch (error) {
       console.error("Veri yüklenemedi", error);

@@ -28,7 +28,6 @@ export default function AdminLayout() {
     { to: "/series", icon: HiFilm, label: "Diziler" },
   ];
 
-  // Editor için içerik yönetimi (silme hariç)
   const editorMenuItems = [
     ...menuItems,
     { to: "/admin/movies", icon: HiCog, label: "Film Yönetimi" },
