@@ -34,7 +34,6 @@ export class Series {
   @Column({ nullable: true })
   posterUrl?: string;
 
-  //cascade: true -> Dizi silinirse sezonları da sil
   @OneToMany(() => Season, (season) => season.series, { cascade: true })
   seasons: Season[];
 

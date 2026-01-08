@@ -15,27 +15,22 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // Kullanıcı doğrulama, arka planda çalışır
   async validateUser(loginUserDto: LoginUserDto) {
     const user = await this.userRepo.findOne({
       where: { username: loginUserDto.username },
     });
 
-    // kullanıcı adı varsa VE şifresi doğruysa (bcrypt ile kontrol et)
-    // compare() de asenkron
     if (user && (await bcrypt.compare(loginUserDto.password, user.password))) {
       return user;
     }
     return null;
   }
 
-  // giriş yapma (token üretme)
   async login(user: User) {
-    //token içine gizlenecek bilgiler
     const payload = { username: user.username, sub: user.id, role: user.role };
 
     return {
-      access_token: this.jwtService.sign(payload), // şifreli token üretilir
+      access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         username: user.username,

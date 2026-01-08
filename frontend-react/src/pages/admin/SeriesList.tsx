@@ -341,7 +341,7 @@ function SeriesList() {
                     className="w-10 h-14 object-cover rounded shadow-sm border border-gray-200 dark:border-gray-700"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
-                        "https://via.placeholder.com/150?text=Afiş+Yok";
+                        "";
                     }}
                   />
                 ) : (

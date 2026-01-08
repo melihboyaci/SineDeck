@@ -473,6 +473,12 @@ function Dashboard() {
           setSelectedCollection(null);
           fetchSeriesDetail(series.id);
         }}
+        onItemRemoved={() => {
+          if (selectedCollection) {
+            fetchCollectionDetail(selectedCollection.id);
+            fetchData();
+          }
+        }}
       />
     </div>
   );

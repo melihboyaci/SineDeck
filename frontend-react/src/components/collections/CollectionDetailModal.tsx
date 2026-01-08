@@ -1,7 +1,9 @@
-import { HiX, HiFilm, HiPlay } from "react-icons/hi";
+import { HiX, HiFilm, HiPlay, HiTrash } from "react-icons/hi";
 import type { Collection } from "../../types/Collection";
 import type { Movie } from "../../types/Movie";
 import type { Series } from "../../types/Series";
+import api from "../../helper/api";
+import { toast } from "react-toastify";
 
 interface Props {
   collection: Collection | null;
@@ -9,6 +11,7 @@ interface Props {
   onClose: () => void;
   onMovieClick?: (movie: Movie) => void;
   onSeriesClick?: (series: Series) => void;
+  onItemRemoved?: () => void;
 }
 
 export default function CollectionDetailModal({
@@ -17,8 +20,45 @@ export default function CollectionDetailModal({
   onClose,
   onMovieClick,
   onSeriesClick,
+  onItemRemoved,
 }: Props) {
   if (!isOpen || !collection) return null;
+
+  const handleRemoveMovie = async (movieId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!confirm("Bu filmi koleksiyondan çıkarmak istediğinize emin misiniz?"))
+      return;
+
+    try {
+      await api.delete(`/collections/${collection.id}/items`, {
+        data: { movieIds: [movieId] },
+      });
+      toast.success("Film koleksiyondan çıkarıldı!");
+      onItemRemoved?.();
+    } catch (error) {
+      console.error("Film çıkarılamadı", error);
+      toast.error("Film çıkarılırken hata oluştu!");
+    }
+  };
+
+  const handleRemoveSeries = async (seriesId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!confirm("Bu diziyi koleksiyondan çıkarmak istediğinize emin misiniz?"))
+      return;
+
+    try {
+      await api.delete(`/collections/${collection.id}/items`, {
+        data: { seriesIds: [seriesId] },
+      });
+      toast.success("Dizi koleksiyondan çıkarıldı!");
+      onItemRemoved?.();
+    } catch (error) {
+      console.error("Dizi çıkarılamadı", error);
+      toast.error("Dizi çıkarılırken hata oluştu!");
+    }
+  };
 
   const totalItems =
     (collection.movies?.length || 0) + (collection.series?.length || 0);
@@ -70,10 +110,12 @@ export default function CollectionDetailModal({
                     {collection.movies.map((movie) => (
                       <div
                         key={movie.id}
-                        onClick={() => onMovieClick?.(movie)}
-                        className="group cursor-pointer"
+                        className="group cursor-pointer relative"
                       >
-                        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                        <div
+                          className="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700"
+                          onClick={() => onMovieClick?.(movie)}
+                        >
                           {movie.posterUrl ? (
                             <img
                               src={movie.posterUrl}
@@ -86,6 +128,13 @@ export default function CollectionDetailModal({
                             </div>
                           )}
                         </div>
+                        <button
+                          onClick={(e) => handleRemoveMovie(movie.id, e)}
+                          className="absolute top-1 right-1 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                          title="Koleksiyondan çıkar"
+                        >
+                          <HiTrash className="text-sm" />
+                        </button>
                         <p className="text-xs font-medium mt-1.5 truncate text-gray-700 dark:text-gray-300">
                           {movie.title}
                         </p>
@@ -105,10 +154,12 @@ export default function CollectionDetailModal({
                     {collection.series.map((series) => (
                       <div
                         key={series.id}
-                        onClick={() => onSeriesClick?.(series)}
-                        className="group cursor-pointer"
+                        className="group cursor-pointer relative"
                       >
-                        <div className="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                        <div
+                          className="aspect-[2/3] rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700"
+                          onClick={() => onSeriesClick?.(series)}
+                        >
                           {series.posterUrl ? (
                             <img
                               src={series.posterUrl}
@@ -121,6 +172,13 @@ export default function CollectionDetailModal({
                             </div>
                           )}
                         </div>
+                        <button
+                          onClick={(e) => handleRemoveSeries(series.id, e)}
+                          className="absolute top-1 right-1 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                          title="Koleksiyondan çıkar"
+                        >
+                          <HiTrash className="text-sm" />
+                        </button>
                         <p className="text-xs font-medium mt-1.5 truncate text-gray-700 dark:text-gray-300">
                           {series.title}
                         </p>
