@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateSeriesDto {
@@ -43,4 +43,5 @@ export class CreateSeriesDto {
   @IsOptional()
   @IsString()
   posterUrl?: string;
+
 }

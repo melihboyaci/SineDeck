@@ -1,13 +1,11 @@
-import { useState, useRef, type ChangeEvent } from "react";
+﻿import { useState, useRef, type ChangeEvent } from "react";
 import { HiPhotograph, HiUpload, HiX, HiLink } from "react-icons/hi";
 import api from "../../helper/api";
-
 interface Props {
   value: string;
   onChange: (url: string) => void;
   label?: string;
 }
-
 export default function PosterUpload({
   value,
   onChange,
@@ -17,37 +15,28 @@ export default function PosterUpload({
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string>(value || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const handleUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     onChange(url);
     setPreview(url);
   };
-
   const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Preview göster
     const reader = new FileReader();
     reader.onload = (e) => {
       setPreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
-
-    // Dosyayı yükle
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
-
       const response = await api.post("/files/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Backend'den gelen yolu tam URL'e çevir
       const uploadedUrl = `http://localhost:3000/${response.data.path}`;
       onChange(uploadedUrl);
       setPreview(uploadedUrl);
@@ -58,7 +47,6 @@ export default function PosterUpload({
       setUploading(false);
     }
   };
-
   const clearImage = () => {
     onChange("");
     setPreview("");
@@ -66,7 +54,6 @@ export default function PosterUpload({
       fileInputRef.current.value = "";
     }
   };
-
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -74,8 +61,6 @@ export default function PosterUpload({
           {label}
           <span className="text-gray-400 font-normal ml-1">(isteğe bağlı)</span>
         </label>
-
-        {/* Mode Toggle */}
         <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
           <button
             type="button"
@@ -103,9 +88,7 @@ export default function PosterUpload({
           </button>
         </div>
       </div>
-
       <div className="flex gap-4">
-        {/* Preview */}
         <div className="w-24 h-36 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 relative">
           {preview ? (
             <>
@@ -129,8 +112,6 @@ export default function PosterUpload({
             </div>
           )}
         </div>
-
-        {/* Input Area */}
         <div className="flex-1">
           {mode === "url" ? (
             <input

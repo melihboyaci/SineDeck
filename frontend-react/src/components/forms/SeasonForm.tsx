@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Modal, Button, FormInput, FormTextarea } from "../ui";
 import type { Season } from "../../types/Season";
-
 type SeasonFormProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -9,13 +8,11 @@ type SeasonFormProps = {
   season?: Season | null;
   seriesId: number;
 };
-
 export type SeasonFormData = {
   seasonNumber: number;
   description?: string;
   seriesId: number;
 };
-
 function SeasonForm({
   isOpen,
   onClose,
@@ -28,7 +25,6 @@ function SeasonForm({
     description: "",
   });
   const [submitting, setSubmitting] = useState(false);
-
   useEffect(() => {
     if (season) {
       setFormData({
@@ -42,11 +38,9 @@ function SeasonForm({
       });
     }
   }, [season, isOpen]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-
     try {
       await onSubmit({
         seasonNumber: Number(formData.seasonNumber),
@@ -55,12 +49,10 @@ function SeasonForm({
       });
       onClose();
     } catch (error) {
-      // Error handling is done in parent
     } finally {
       setSubmitting(false);
     }
   };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -78,7 +70,6 @@ function SeasonForm({
           required
           min={1}
         />
-
         <FormTextarea
           label="Açıklama (Opsiyonel)"
           value={formData.description}
@@ -87,7 +78,6 @@ function SeasonForm({
           }
           rows={3}
         />
-
         <div className="flex gap-3 pt-4">
           <Button
             type="button"
@@ -106,5 +96,4 @@ function SeasonForm({
     </Modal>
   );
 }
-
 export default SeasonForm;

@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Get,
   Post,
@@ -18,7 +18,6 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from 'src/users/user.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-
 @ApiTags('Movies (Filmler)')
 @Controller('movies')
 export class MoviesController {
@@ -42,7 +41,6 @@ export class MoviesController {
   @ApiOperation({ summary: 'Belirli bir filmi getir' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    //ParseIntPipe: id parametresini number'a çevirir, eğer çevrilemezse 400 Bad Request hatası döner
     return this.moviesService.findOne(+id);
   }
 

@@ -1,17 +1,14 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import type { Genre } from "../../types/Genre";
 import api from "../../helper/api";
 import { HiX, HiPlus } from "react-icons/hi";
-
 type GenreSelectorProps = {
   selectedGenreIds: number[];
   onChange: (genreIds: number[]) => void;
 };
-
 function GenreSelector({ selectedGenreIds, onChange }: GenreSelectorProps) {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchGenres = async () => {
       try {
@@ -25,7 +22,6 @@ function GenreSelector({ selectedGenreIds, onChange }: GenreSelectorProps) {
     };
     fetchGenres();
   }, []);
-
   const toggleGenre = (genreId: number) => {
     if (selectedGenreIds.includes(genreId)) {
       onChange(selectedGenreIds.filter((id) => id !== genreId));
@@ -33,21 +29,17 @@ function GenreSelector({ selectedGenreIds, onChange }: GenreSelectorProps) {
       onChange([...selectedGenreIds, genreId]);
     }
   };
-
   const selectedGenres = genres.filter((g) => selectedGenreIds.includes(g.id));
   const availableGenres = genres.filter(
     (g) => !selectedGenreIds.includes(g.id)
   );
-
   if (loading) {
     return (
       <div className="text-sm text-gray-500 py-2">Türler yükleniyor...</div>
     );
   }
-
   return (
     <div className="space-y-3">
-      {/* Selected Genres */}
       {selectedGenres.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedGenres.map((genre) => (
@@ -67,8 +59,6 @@ function GenreSelector({ selectedGenreIds, onChange }: GenreSelectorProps) {
           ))}
         </div>
       )}
-
-      {/* Available Genres */}
       {availableGenres.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {availableGenres.map((genre) => (
@@ -84,7 +74,6 @@ function GenreSelector({ selectedGenreIds, onChange }: GenreSelectorProps) {
           ))}
         </div>
       )}
-
       {genres.length === 0 && (
         <div className="text-sm text-gray-500">
           Henüz tür eklenmemiş. Önce tür ekleyin.
@@ -93,5 +82,4 @@ function GenreSelector({ selectedGenreIds, onChange }: GenreSelectorProps) {
     </div>
   );
 }
-
 export default GenreSelector;

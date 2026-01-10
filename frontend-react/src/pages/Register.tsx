@@ -1,11 +1,9 @@
-import React, { useState, useMemo } from "react";
+﻿import React, { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../helper/api";
 import { toast } from "react-toastify";
 import { FormInput, Button } from "../components/ui";
 import { HiCheck, HiX } from "react-icons/hi";
-
-// Şifre validasyon kuralları
 const passwordRules = [
   {
     key: "minLength",
@@ -28,7 +26,6 @@ const passwordRules = [
     test: (pw: string) => /[0-9]/.test(pw),
   },
 ];
-
 function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -38,35 +35,26 @@ function Register() {
     password: false,
     confirmPassword: false,
   });
-
   const navigate = useNavigate();
-
-  // Şifre validasyonlarını hesapla
   const validations = useMemo(() => {
     return passwordRules.map((rule) => ({
       ...rule,
       passed: rule.test(password),
     }));
   }, [password]);
-
   const allRulesPassed = validations.every((v) => v.passed);
   const passwordsMatch = password === confirmPassword;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!allRulesPassed) {
       toast.error("Şifre gereksinimleri karşılanmıyor!");
       return;
     }
-
     if (!passwordsMatch) {
       toast.error("Şifreler eşleşmiyor!");
       return;
     }
-
     setLoading(true);
-
     try {
       await api.post("/auth/register", { username, password });
       toast.success("Kayıt başarılı! Giriş yapabilirsiniz.");
@@ -81,13 +69,11 @@ function Register() {
       setLoading(false);
     }
   };
-
   return (
     <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
       <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-6">
         Kayıt Ol
       </h2>
-
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <FormInput
           id="username"
@@ -98,7 +84,6 @@ function Register() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-
         <div>
           <FormInput
             id="password"
@@ -110,8 +95,6 @@ function Register() {
             onChange={(e) => setPassword(e.target.value)}
             onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
           />
-
-          {/* Şifre Kuralları Göstergesi */}
           {(touched.password || password.length > 0) && (
             <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg space-y-1.5">
               {validations.map((rule) => (
@@ -134,7 +117,6 @@ function Register() {
             </div>
           )}
         </div>
-
         <div>
           <FormInput
             id="confirmPassword"
@@ -159,7 +141,6 @@ function Register() {
             </p>
           )}
         </div>
-
         <Button
           type="submit"
           variant="primary"
@@ -169,7 +150,6 @@ function Register() {
           {loading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
         </Button>
       </form>
-
       <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
         Zaten hesabınız var mı?{" "}
         <Link
@@ -182,5 +162,4 @@ function Register() {
     </div>
   );
 }
-
 export default Register;

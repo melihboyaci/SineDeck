@@ -1,6 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+﻿import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString, Length } from 'class-validator';
-
 export class CreateCollectionDto {
   @ApiProperty({
     example: 'Favori Filmlerim',
@@ -9,7 +8,6 @@ export class CreateCollectionDto {
   @IsString()
   @Length(1, 100)
   name: string;
-
   @ApiPropertyOptional({
     example: 'En sevdiğim filmler burada',
     description: 'Koleksiyon açıklaması',

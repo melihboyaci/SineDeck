@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body,
   Controller,
   Delete,
@@ -14,12 +14,13 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserRole } from './user.entity';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users (Kullanıcı Yönetimi)')
 @ApiBearerAuth()
 @Controller('users')
-@UseGuards(AuthGuard('jwt'), RolesGuard) // genel koruma: buradaki tüm işlemler giriş yapmış olmayı gerektirir
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -45,6 +46,16 @@ export class UsersController {
     @Body() updateRoleDto: UpdateRoleDto,
   ) {
     return this.usersService.updateRole(id, updateRoleDto);
+  }
+
+  @ApiOperation({ summary: 'Kullanıcı adını güncelle (Sadece Admin)' })
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/username')
+  updateUsername(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUsernameDto: UpdateUsernameDto,
+  ) {
+    return this.usersService.updateUsername(id, updateUsernameDto);
   }
 
   @ApiOperation({ summary: 'Kullanıcıyı sil (Sadece Admin)' })

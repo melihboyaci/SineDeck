@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,23 +7,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { User } from 'src/users/user.entity';
 import { JwtStrategy } from './jwt.strategy';
-
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    
-    //auth kütüphanesi
     PassportModule,
-
-    //token üretimi için jwt ayarları
     JwtModule.register({
-      global: true, //token servisini tüm proje için erişilebilir
+      global: true, 
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' }, //token 1 saat sonra geçersiz olsun
+      signOptions: { expiresIn: '1h' }, 
     }),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService], //başka modüller de kullanabilsin.
+  exports: [AuthService], 
 })
 export class AuthModule {}

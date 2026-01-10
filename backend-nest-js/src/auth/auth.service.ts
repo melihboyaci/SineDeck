@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+﻿import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/user.entity';
@@ -28,7 +28,7 @@ export class AuthService {
 
   async login(user: User) {
     const payload = { username: user.username, sub: user.id, role: user.role };
-
+    
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -39,19 +39,16 @@ export class AuthService {
     };
   }
 
-  // kayıt olma
+
   async register(createUserDto: CreateUserDto) {
-    // şifreyi hash'le (10 turda)
-    // hocada hashSync yani asenkron kullanmadığı için şifreleme bitene kadar bekleyecek
-    // biz asenkron kullanıyoruz, bu yüzden await kullanıyoruz
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-    // yeni kullanıcı nesnesi hazırlanır
+    
     const newUser = this.userRepo.create({
-      ...createUserDto, // DTO'daki her şeyi al
-      password: hashedPassword, // Ama şifreyi benim verdiğimle değiştir
+      ...createUserDto,
+      password: hashedPassword,
     });
-
+    
     return this.userRepo.save(newUser);
+  
   }
 }

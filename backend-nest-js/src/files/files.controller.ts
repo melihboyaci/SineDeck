@@ -1,4 +1,4 @@
-import {
+﻿import {
   Controller,
   Post,
   UseInterceptors,
@@ -9,7 +9,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ApiTags, ApiConsumes, ApiBody, ApiOperation } from '@nestjs/swagger';
-
 @ApiTags('files')
 @Controller('files')
 export class FilesController {
@@ -48,7 +47,7 @@ export class FilesController {
         callback(null, true);
       },
       limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
+        fileSize: 5 * 1024 * 1024, 
       },
     }),
   )

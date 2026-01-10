@@ -1,10 +1,9 @@
-import { HiX, HiFilm, HiPlay, HiTrash } from "react-icons/hi";
+﻿import { HiX, HiFilm, HiPlay, HiTrash } from "react-icons/hi";
 import type { Collection } from "../../types/Collection";
 import type { Movie } from "../../types/Movie";
 import type { Series } from "../../types/Series";
 import api from "../../helper/api";
 import { toast } from "react-toastify";
-
 interface Props {
   collection: Collection | null;
   isOpen: boolean;
@@ -13,7 +12,6 @@ interface Props {
   onSeriesClick?: (series: Series) => void;
   onItemRemoved?: () => void;
 }
-
 export default function CollectionDetailModal({
   collection,
   isOpen,
@@ -23,13 +21,10 @@ export default function CollectionDetailModal({
   onItemRemoved,
 }: Props) {
   if (!isOpen || !collection) return null;
-
   const handleRemoveMovie = async (movieId: number, e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (!confirm("Bu filmi koleksiyondan çıkarmak istediğinize emin misiniz?"))
       return;
-
     try {
       await api.delete(`/collections/${collection.id}/items`, {
         data: { movieIds: [movieId] },
@@ -41,13 +36,10 @@ export default function CollectionDetailModal({
       toast.error("Film çıkarılırken hata oluştu!");
     }
   };
-
   const handleRemoveSeries = async (seriesId: number, e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (!confirm("Bu diziyi koleksiyondan çıkarmak istediğinize emin misiniz?"))
       return;
-
     try {
       await api.delete(`/collections/${collection.id}/items`, {
         data: { seriesIds: [seriesId] },
@@ -59,14 +51,11 @@ export default function CollectionDetailModal({
       toast.error("Dizi çıkarılırken hata oluştu!");
     }
   };
-
   const totalItems =
     (collection.movies?.length || 0) + (collection.series?.length || 0);
-
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-        {/* Header */}
         <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-gray-800 dark:text-white">
@@ -95,12 +84,9 @@ export default function CollectionDetailModal({
             <HiX className="text-xl" />
           </button>
         </div>
-
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-5">
           {totalItems > 0 ? (
             <div className="space-y-6">
-              {/* Filmler */}
               {collection.movies && collection.movies.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">
@@ -143,8 +129,6 @@ export default function CollectionDetailModal({
                   </div>
                 </div>
               )}
-
-              {/* Diziler */}
               {collection.series && collection.series.length > 0 && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-2">

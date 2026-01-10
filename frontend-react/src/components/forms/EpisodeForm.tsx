@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Modal, Button, FormInput, FormTextarea } from "../ui";
 import type { Episode } from "../../types/Episode";
-
 type EpisodeFormProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -9,7 +8,6 @@ type EpisodeFormProps = {
   episode?: Episode | null;
   seasonId: number;
 };
-
 export type EpisodeFormData = {
   title: string;
   episodeNumber: number;
@@ -17,7 +15,6 @@ export type EpisodeFormData = {
   duration: number;
   seasonId: number;
 };
-
 function EpisodeForm({
   isOpen,
   onClose,
@@ -32,7 +29,6 @@ function EpisodeForm({
     duration: "",
   });
   const [submitting, setSubmitting] = useState(false);
-
   useEffect(() => {
     if (episode) {
       setFormData({
@@ -50,11 +46,9 @@ function EpisodeForm({
       });
     }
   }, [episode, isOpen]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-
     try {
       await onSubmit({
         title: formData.title,
@@ -65,12 +59,10 @@ function EpisodeForm({
       });
       onClose();
     } catch (error) {
-      // Error handling is done in parent
     } finally {
       setSubmitting(false);
     }
   };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -85,7 +77,6 @@ function EpisodeForm({
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
-
         <FormInput
           label="Bölüm Numarası"
           type="number"
@@ -96,7 +87,6 @@ function EpisodeForm({
           required
           min={1}
         />
-
         <FormInput
           label="Süre (Dakika)"
           type="number"
@@ -107,7 +97,6 @@ function EpisodeForm({
           required
           min={1}
         />
-
         <FormTextarea
           label="Açıklama (Opsiyonel)"
           value={formData.description}
@@ -116,7 +105,6 @@ function EpisodeForm({
           }
           rows={3}
         />
-
         <div className="flex gap-3 pt-4">
           <Button
             type="button"
@@ -135,5 +123,4 @@ function EpisodeForm({
     </Modal>
   );
 }
-
 export default EpisodeForm;

@@ -1,11 +1,9 @@
-import type { TextareaHTMLAttributes } from "react";
-
+﻿import type { TextareaHTMLAttributes } from "react";
 interface Props extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   optional?: boolean;
   error?: string;
 }
-
 export default function FormTextarea({
   label,
   optional = false,

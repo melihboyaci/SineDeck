@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+﻿import { useContext, useEffect, useState } from "react";
 import type { Series } from "../../types/Series";
 import type { Season } from "../../types/Season";
 import type { Episode } from "../../types/Episode";
@@ -23,32 +23,23 @@ import EpisodeForm, {
   type EpisodeFormData,
 } from "../../components/forms/EpisodeForm";
 import { LoadingSpinner, PageHeader } from "../../components/ui";
-
 function SeriesList() {
   const { user } = useContext(AuthContext);
   const isAdmin = user?.role === "admin";
-
   const [series, setSeries] = useState<Series[]>([]);
   const [loading, setLoading] = useState(true);
-
-  // Expanded states
   const [expandedSeries, setExpandedSeries] = useState<number | null>(null);
   const [expandedSeason, setExpandedSeason] = useState<number | null>(null);
-
-  // Seasons and Episodes data
   const [seasons, setSeasons] = useState<Season[]>([]);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loadingSeasons, setLoadingSeasons] = useState(false);
   const [loadingEpisodes, setLoadingEpisodes] = useState(false);
-
-  // Modal states
   const [seasonModalOpen, setSeasonModalOpen] = useState(false);
   const [episodeModalOpen, setEpisodeModalOpen] = useState(false);
   const [currentSeason, setCurrentSeason] = useState<Season | null>(null);
   const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null);
   const [currentSeriesId, setCurrentSeriesId] = useState(0);
   const [currentSeasonId, setCurrentSeasonId] = useState(0);
-
   const fetchSeries = async () => {
     try {
       const response = await api.get("/series");
@@ -59,12 +50,9 @@ function SeriesList() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchSeries();
   }, []);
-
-  // Fetch seasons for a series
   const fetchSeasons = async (seriesId: number) => {
     setLoadingSeasons(true);
     try {
@@ -79,8 +67,6 @@ function SeriesList() {
       setLoadingSeasons(false);
     }
   };
-
-  // Fetch episodes for a season
   const fetchEpisodes = async (seasonId: number) => {
     setLoadingEpisodes(true);
     try {
@@ -95,8 +81,6 @@ function SeriesList() {
       setLoadingEpisodes(false);
     }
   };
-
-  // Toggle series expansion
   const toggleSeries = (seriesId: number) => {
     if (expandedSeries === seriesId) {
       setExpandedSeries(null);
@@ -110,8 +94,6 @@ function SeriesList() {
       fetchSeasons(seriesId);
     }
   };
-
-  // Toggle season expansion
   const toggleSeason = (seasonId: number) => {
     if (expandedSeason === seasonId) {
       setExpandedSeason(null);
@@ -121,8 +103,6 @@ function SeriesList() {
       fetchEpisodes(seasonId);
     }
   };
-
-  // Delete handlers
   const handleDeleteSeries = async (id: number) => {
     if (
       !window.confirm(
@@ -130,7 +110,6 @@ function SeriesList() {
       )
     )
       return;
-
     try {
       await api.delete(`/series/${id}`);
       toast.success("Dizi silindi.");
@@ -144,7 +123,6 @@ function SeriesList() {
       toast.error("Silme işlemi başarısız.");
     }
   };
-
   const handleDeleteSeason = async (id: number) => {
     if (
       !window.confirm(
@@ -152,7 +130,6 @@ function SeriesList() {
       )
     )
       return;
-
     try {
       await api.delete(`/seasons/${id}`);
       toast.success("Sezon silindi.");
@@ -165,10 +142,8 @@ function SeriesList() {
       toast.error("Silme işlemi başarısız.");
     }
   };
-
   const handleDeleteEpisode = async (id: number) => {
     if (!window.confirm("Bu bölümü silmek istediğinize emin misiniz?")) return;
-
     try {
       await api.delete(`/episodes/${id}`);
       toast.success("Bölüm silindi.");
@@ -177,20 +152,16 @@ function SeriesList() {
       toast.error("Silme işlemi başarısız.");
     }
   };
-
-  // Season Modal handlers
   const openAddSeasonModal = (seriesId: number) => {
     setCurrentSeason(null);
     setCurrentSeriesId(seriesId);
     setSeasonModalOpen(true);
   };
-
   const openEditSeasonModal = (season: Season) => {
     setCurrentSeason(season);
     setCurrentSeriesId(season.series?.id ?? 0);
     setSeasonModalOpen(true);
   };
-
   const handleSeasonSubmit = async (data: SeasonFormData) => {
     try {
       if (currentSeason) {
@@ -206,20 +177,16 @@ function SeriesList() {
       throw error;
     }
   };
-
-  // Episode Modal handlers
   const openAddEpisodeModal = (seasonId: number) => {
     setCurrentEpisode(null);
     setCurrentSeasonId(seasonId);
     setEpisodeModalOpen(true);
   };
-
   const openEditEpisodeModal = (episode: Episode) => {
     setCurrentEpisode(episode);
     setCurrentSeasonId(episode.season?.id ?? 0);
     setEpisodeModalOpen(true);
   };
-
   const handleEpisodeSubmit = async (data: EpisodeFormData) => {
     try {
       if (currentEpisode) {
@@ -235,11 +202,9 @@ function SeriesList() {
       throw error;
     }
   };
-
   if (loading) {
     return <LoadingSpinner message="Diziler yükleniyor..." />;
   }
-
   return (
     <div className="max-w-6xl mx-auto">
       <PageHeader
@@ -254,15 +219,12 @@ function SeriesList() {
           </Link>
         }
       />
-
-      {/* Series List */}
       <div className="space-y-3">
         {series.map((item) => (
           <div
             key={item.id}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
           >
-            {/* Series Row */}
             <div
               className="flex items-center justify-between px-5 py-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               onClick={() => toggleSeries(item.id)}
@@ -318,8 +280,6 @@ function SeriesList() {
                 )}
               </div>
             </div>
-
-            {/* Seasons Panel */}
             {expandedSeries === item.id && (
               <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
                 <div className="px-5 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
@@ -334,7 +294,6 @@ function SeriesList() {
                     <HiPlus /> Sezon Ekle
                   </button>
                 </div>
-
                 {loadingSeasons ? (
                   <div className="px-5 py-6 text-center text-gray-500">
                     Sezonlar yükleniyor...
@@ -349,7 +308,6 @@ function SeriesList() {
                       .sort((a, b) => a.seasonNumber - b.seasonNumber)
                       .map((season) => (
                         <div key={season.id}>
-                          {/* Season Row */}
                           <div
                             className="flex items-center justify-between px-5 py-3 pl-12 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors"
                             onClick={() => toggleSeason(season.id)}
@@ -391,8 +349,6 @@ function SeriesList() {
                               )}
                             </div>
                           </div>
-
-                          {/* Episodes Panel */}
                           {expandedSeason === season.id && (
                             <div className="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
                               <div className="px-5 py-2 pl-20 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
@@ -407,7 +363,6 @@ function SeriesList() {
                                   <HiPlus /> Bölüm Ekle
                                 </button>
                               </div>
-
                               {loadingEpisodes ? (
                                 <div className="px-5 py-4 pl-20 text-center text-gray-500 text-sm">
                                   Bölümler yükleniyor...
@@ -476,15 +431,12 @@ function SeriesList() {
             )}
           </div>
         ))}
-
         {series.length === 0 && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center text-gray-500">
             Henüz dizi bulunmuyor.
           </div>
         )}
       </div>
-
-      {/* Season Form */}
       <SeasonForm
         isOpen={seasonModalOpen}
         onClose={() => setSeasonModalOpen(false)}
@@ -492,8 +444,6 @@ function SeriesList() {
         season={currentSeason}
         seriesId={currentSeriesId}
       />
-
-      {/* Episode Form */}
       <EpisodeForm
         isOpen={episodeModalOpen}
         onClose={() => setEpisodeModalOpen(false)}
@@ -504,5 +454,4 @@ function SeriesList() {
     </div>
   );
 }
-
 export default SeriesList;

@@ -1,5 +1,4 @@
-import { HiFilm } from "react-icons/hi";
-
+﻿import { HiFilm } from "react-icons/hi";
 interface Props {
   src?: string;
   alt: string;
@@ -7,7 +6,6 @@ interface Props {
   hover?: boolean;
   onClick?: () => void;
 }
-
 export default function PosterThumbnail({
   src,
   alt,
@@ -21,14 +19,12 @@ export default function PosterThumbnail({
     md: "w-20 h-28",
     lg: "w-32 h-44",
   };
-
   const iconSizes = {
     xs: "text-xs",
     sm: "text-sm",
     md: "text-xl",
     lg: "text-3xl",
   };
-
   return (
     <div
       className={`${

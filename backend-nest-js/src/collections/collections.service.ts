@@ -1,4 +1,4 @@
-import {
+﻿import {
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -11,16 +11,13 @@ import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { AddItemsDto } from './dto/add-items.dto';
 import { Movie } from '../movies/entities/movie.entity';
 import { Series } from '../series/entities/series.entity';
-
 @Injectable()
 export class CollectionsService {
   constructor(
     @InjectRepository(Collection)
     private readonly collectionRepo: Repository<Collection>,
-
     @InjectRepository(Movie)
     private readonly movieRepo: Repository<Movie>,
-
     @InjectRepository(Series)
     private readonly seriesRepo: Repository<Series>,
   ) {}
@@ -78,7 +75,7 @@ export class CollectionsService {
       const movies = await this.movieRepo.find({
         where: { id: In(dto.movieIds) },
       });
-      // Mevcut filmleri koruyarak yenilerini ekle
+
       const existingIds = collection.movies.map((m) => m.id);
       const newMovies = movies.filter((m) => !existingIds.includes(m.id));
       collection.movies = [...collection.movies, ...newMovies];

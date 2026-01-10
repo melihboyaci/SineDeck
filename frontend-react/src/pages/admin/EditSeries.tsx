@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+﻿import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "react-toastify";
 import api from "../../helper/api";
@@ -13,14 +13,12 @@ import {
   LoadingSpinner,
   PosterUpload,
 } from "../../components/ui";
-
 function EditSeries() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [selectedGenreIds, setSelectedGenreIds] = useState<number[]>([]);
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -29,7 +27,6 @@ function EditSeries() {
     creator: "",
     posterUrl: "",
   });
-
   useEffect(() => {
     const fetchSeries = async () => {
       try {
@@ -46,7 +43,6 @@ function EditSeries() {
           creator: response.data.creator ?? "",
           posterUrl: response.data.posterUrl ?? "",
         });
-        // Mevcut türleri yükle
         if (response.data.genres && response.data.genres.length > 0) {
           setSelectedGenreIds(
             response.data.genres.map((g: { id: number }) => g.id)
@@ -61,17 +57,14 @@ function EditSeries() {
     };
     fetchSeries();
   }, [id, navigate]);
-
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-
     try {
       await api.patch(`/series/${id}`, {
         title: formData.title,
@@ -83,10 +76,7 @@ function EditSeries() {
         ...(formData.creator ? { creator: formData.creator } : {}),
         ...(formData.posterUrl ? { posterUrl: formData.posterUrl } : {}),
       });
-
-      // Türleri güncelle
       await api.patch(`/series/${id}/genres`, { genreIds: selectedGenreIds });
-
       toast.success("Dizi başarıyla güncellendi!");
       navigate("/admin/series");
     } catch (error) {
@@ -95,11 +85,9 @@ function EditSeries() {
       setSubmitting(false);
     }
   };
-
   if (loading) {
     return <LoadingSpinner message="Dizi yükleniyor..." />;
   }
-
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader
@@ -108,7 +96,6 @@ function EditSeries() {
         icon={HiPencil}
         backUrl="/admin/series"
       />
-
       <FormCard onSubmit={handleSubmit}>
         <FormInput
           id="title"
@@ -117,7 +104,6 @@ function EditSeries() {
           value={formData.title}
           onChange={handleChange}
         />
-
         <FormTextarea
           id="description"
           label="Dizi Özeti"
@@ -126,7 +112,6 @@ function EditSeries() {
           value={formData.description}
           onChange={handleChange}
         />
-
         <FormInput
           id="creator"
           label="Yapımcı / Yaratıcı"
@@ -134,7 +119,6 @@ function EditSeries() {
           value={formData.creator}
           onChange={handleChange}
         />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             id="startYear"
@@ -154,12 +138,10 @@ function EditSeries() {
             onChange={handleChange}
           />
         </div>
-
         <GenreSelector
           selectedGenreIds={selectedGenreIds}
           onChange={setSelectedGenreIds}
         />
-
         <PosterUpload
           value={formData.posterUrl}
           onChange={(url) =>
@@ -167,7 +149,6 @@ function EditSeries() {
           }
           label="Afiş"
         />
-
         <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
             type="button"
@@ -190,5 +171,4 @@ function EditSeries() {
     </div>
   );
 }
-
 export default EditSeries;

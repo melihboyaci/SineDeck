@@ -1,4 +1,4 @@
-import {
+﻿import {
   Column,
   CreateDateColumn,
   Entity,
@@ -11,7 +11,6 @@ import {
 import { User } from '../../users/user.entity';
 import { Movie } from '../../movies/entities/movie.entity';
 import { Series } from '../../series/entities/series.entity';
-
 @Entity('collections')
 export class Collection {
   @PrimaryGeneratedColumn()

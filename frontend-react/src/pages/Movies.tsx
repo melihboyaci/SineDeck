@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import type { Movie } from "../types/Movie";
 import api from "../helper/api";
 import { HiFilm } from "react-icons/hi";
 import MediaCard from "../components/media/MediaCard";
 import MediaDetailModal from "../components/media/MediaDetailModal";
 import { LoadingSpinner, EmptyState } from "../components/ui";
-
 function Movies() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,14 +33,11 @@ function Movies() {
   useEffect(() => {
     fetchMovies();
   }, []);
-
   if (loading) {
     return <LoadingSpinner message="Filmler yükleniyor..." />;
   }
-
   return (
     <div>
-      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <HiFilm className="text-3xl text-purple-600" />
@@ -51,8 +47,6 @@ function Movies() {
         </div>
         <p className="text-gray-500">{movies.length} film bulundu</p>
       </div>
-
-      {/* Movie Grid */}
       {movies.length === 0 ? (
         <EmptyState
           icon={HiFilm}
@@ -72,8 +66,6 @@ function Movies() {
           ))}
         </div>
       )}
-
-      {/* Detail Modal */}
       <MediaDetailModal
         item={selectedMovie}
         type="movie"
@@ -84,5 +76,4 @@ function Movies() {
     </div>
   );
 }
-
 export default Movies;

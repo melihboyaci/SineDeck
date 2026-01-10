@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+﻿import { Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AuthLayout from "./components/layouts/AuthLayout";
@@ -22,7 +22,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
-
       <Route element={<AdminLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/movies" element={<Movies />} />
@@ -39,5 +38,4 @@ function App() {
     </Routes>
   );
 }
-
 export default App;

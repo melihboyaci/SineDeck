@@ -1,8 +1,7 @@
-interface Props {
+﻿interface Props {
   message?: string;
   size?: "sm" | "md" | "lg";
 }
-
 export default function LoadingSpinner({
   message = "Yükleniyor...",
   size = "md",
@@ -12,7 +11,6 @@ export default function LoadingSpinner({
     md: "h-8 w-8",
     lg: "h-12 w-12",
   };
-
   return (
     <div className="flex flex-col justify-center items-center h-64 gap-3">
       <svg

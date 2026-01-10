@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Movie } from "../types/Movie";
 import type { Series } from "../types/Series";
@@ -24,17 +24,16 @@ function Dashboard() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Detail modal states
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [selectedSeries, setSelectedSeries] = useState<Series | null>(null);
   const [selectedCollection, setSelectedCollection] =
     useState<Collection | null>(null);
 
-  // Collection modal states
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(
     null
   );
+
   const [collectionForm, setCollectionForm] = useState({
     name: "",
     description: "",
@@ -51,11 +50,7 @@ function Dashboard() {
         api.get("/series"),
         api.get("/collections"),
       ]);
-
-      // Son 6 film ve dizi (createdAt'e göre sıralanmış)
       setRecentMovies(moviesRes.data.slice(0, 6));
-
-      // Dizileri createdAt'e göre sırala (en yeni önce)
       const sortedSeries = [...seriesRes.data].sort((a, b) => {
         if (!a.createdAt || !b.createdAt) return 0;
         return (
@@ -63,7 +58,6 @@ function Dashboard() {
         );
       });
       setRecentSeries(sortedSeries.slice(0, 6));
-
       setCollections(collectionsRes.data);
     } catch (error) {
       console.error("Veri yüklenemedi", error);
@@ -89,6 +83,7 @@ function Dashboard() {
       console.error("Dizi detayı yüklenemedi", error);
     }
   };
+
   const fetchCollectionDetail = async (id: number) => {
     try {
       const response = await api.get(`/collections/${id}`);
@@ -98,6 +93,7 @@ function Dashboard() {
       toast.error("Koleksiyon detayları yüklenemedi!");
     }
   };
+
   const handleCreateCollection = async () => {
     if (!collectionForm.name.trim()) {
       toast.error("Koleksiyon adı gerekli!");
@@ -112,6 +108,7 @@ function Dashboard() {
         await api.post("/collections", collectionForm);
         toast.success("Koleksiyon oluşturuldu!");
       }
+
       setShowCollectionModal(false);
       setEditingCollection(null);
       setCollectionForm({ name: "", description: "" });
@@ -148,9 +145,7 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Son Eklenenler - Yan yana, minimal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Son Eklenen Filmler */}
         <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -166,7 +161,6 @@ function Dashboard() {
               Tümü <HiChevronRight className="text-sm" />
             </Link>
           </div>
-
           {recentMovies.length > 0 ? (
             <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
               {recentMovies.slice(0, 5).map((movie) => (
@@ -200,8 +194,6 @@ function Dashboard() {
             </p>
           )}
         </section>
-
-        {/* Son Eklenen Diziler */}
         <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -217,7 +209,6 @@ function Dashboard() {
               Tümü <HiChevronRight className="text-sm" />
             </Link>
           </div>
-
           {recentSeries.length > 0 ? (
             <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
               {recentSeries.slice(0, 5).map((series) => (
@@ -253,7 +244,6 @@ function Dashboard() {
         </section>
       </div>
 
-      {/* Koleksiyonlarım */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -264,6 +254,7 @@ function Dashboard() {
               Koleksiyonlarım
             </h2>
           </div>
+
           <button
             onClick={() => {
               setEditingCollection(null);
@@ -295,6 +286,7 @@ function Dashboard() {
                       </p>
                     )}
                   </div>
+
                   <div
                     className="flex gap-1"
                     onClick={(e) => e.stopPropagation()}
@@ -325,13 +317,12 @@ function Dashboard() {
                   </span>
                 </div>
 
-                {/* Mini poster grid */}
                 {collection.movies?.length > 0 ||
                 collection.series?.length > 0 ? (
                   <div className="flex gap-2">
                     {[
-                      ...(collection.movies || []).slice(0, 3),
-                      ...(collection.series || []).slice(0, 3),
+                      ...(collection.movies || []),
+                      ...(collection.series || []),
                     ]
                       .slice(0, 4)
                       .map((item, idx) => (
@@ -385,7 +376,6 @@ function Dashboard() {
         )}
       </section>
 
-      {/* Collection Modal */}
       {showCollectionModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-md p-6">
@@ -446,6 +436,7 @@ function Dashboard() {
               >
                 İptal
               </button>
+
               <button
                 onClick={handleCreateCollection}
                 className="flex-1 px-4 py-2.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors"
@@ -457,7 +448,6 @@ function Dashboard() {
         </div>
       )}
 
-      {/* Detail Modals */}
       <MediaDetailModal
         item={selectedMovie}
         type="movie"
@@ -465,6 +455,7 @@ function Dashboard() {
         onClose={() => setSelectedMovie(null)}
         onCollectionUpdated={fetchData}
       />
+
       <MediaDetailModal
         item={selectedSeries}
         type="series"
@@ -472,6 +463,7 @@ function Dashboard() {
         onClose={() => setSelectedSeries(null)}
         onCollectionUpdated={fetchData}
       />
+
       <CollectionDetailModal
         collection={selectedCollection}
         isOpen={!!selectedCollection}
@@ -494,5 +486,4 @@ function Dashboard() {
     </div>
   );
 }
-
 export default Dashboard;

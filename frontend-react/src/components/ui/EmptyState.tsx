@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 import type { IconType } from "react-icons";
-
 interface Props {
   icon: IconType;
   title: string;
@@ -8,7 +7,6 @@ interface Props {
   action?: ReactNode;
   dashed?: boolean;
 }
-
 export default function EmptyState({
   icon: Icon,
   title,

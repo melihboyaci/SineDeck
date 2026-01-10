@@ -1,5 +1,4 @@
-import type { Episode } from "./Episode";
-
+﻿import type { Episode } from "./Episode";
 export interface Season {
   id: number;
   seasonNumber: number;

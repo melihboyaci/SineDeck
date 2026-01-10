@@ -1,9 +1,7 @@
-import { FormHTMLAttributes, ReactNode } from "react";
-
+﻿import { FormHTMLAttributes, ReactNode } from "react";
 interface Props extends FormHTMLAttributes<HTMLFormElement> {
   children: ReactNode;
 }
-
 export default function FormCard({
   children,
   className = "",

@@ -1,11 +1,9 @@
-import type { InputHTMLAttributes } from "react";
-
+﻿import type { InputHTMLAttributes } from "react";
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   optional?: boolean;
   error?: string;
 }
-
 export default function FormInput({
   label,
   optional = false,

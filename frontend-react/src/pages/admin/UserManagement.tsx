@@ -1,20 +1,16 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import type { User } from "../../types/User";
 import api from "../../helper/api";
 import { toast } from "react-toastify";
 import { HiUsers } from "react-icons/hi";
-import {
-  LoadingSpinner,
-  PageHeader,
-
-} from "../../components/ui";
-
+import { LoadingSpinner, PageHeader } from "../../components/ui";
 function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null);
-
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [editingUsername, setEditingUsername] = useState("");
   const fetchUsers = async () => {
     try {
       const response = await api.get("/users");
@@ -25,11 +21,9 @@ function UserManagement() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchUsers();
   }, []);
-
   const handleRoleChange = async (id: number, newRole: string) => {
     try {
       await api.patch(`/users/${id}/role`, { role: newRole });
@@ -40,6 +34,35 @@ function UserManagement() {
     }
   };
 
+  const handleUsernameEdit = (user: User) => {
+    setEditingUserId(user.id);
+    setEditingUsername(user.username);
+  };
+
+  const handleUsernameSave = async (id: number) => {
+    if (!editingUsername.trim()) {
+      toast.error("Kullanıcı adı boş olamaz");
+      return;
+    }
+    try {
+      await api.patch(`/users/${id}/username`, { username: editingUsername });
+      toast.success("Kullanıcı adı güncellendi");
+      setUsers(
+        users.map((u) =>
+          u.id === id ? { ...u, username: editingUsername } : u
+        )
+      );
+      setEditingUserId(null);
+      setEditingUsername("");
+    } catch (error) {
+      toast.error("İsim güncellenemedi.");
+    }
+  };
+
+  const handleUsernameCancel = () => {
+    setEditingUserId(null);
+    setEditingUsername("");
+  };
   const handleDelete = async () => {
     if (!userIdToDelete) return;
     try {
@@ -52,11 +75,9 @@ function UserManagement() {
       toast.error("Silme işlemi başarısız.");
     }
   };
-
   if (loading) {
     return <LoadingSpinner message="Kullanıcılar yükleniyor..." />;
   }
-
   return (
     <div className="max-w-4xl mx-auto">
       <PageHeader
@@ -64,8 +85,6 @@ function UserManagement() {
         subtitle="Kullanıcıları görüntüleyin ve yönetin"
         icon={HiUsers}
       />
-
-      {/* Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -82,7 +101,39 @@ function UserManagement() {
                 className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <td className="px-6 py-4 text-gray-900 dark:text-white">
-                  {user.username}
+                  {editingUserId === user.id ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={editingUsername}
+                        onChange={(e) => setEditingUsername(e.target.value)}
+                        className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => handleUsernameSave(user.id)}
+                        className="px-2 py-1 text-xs rounded bg-green-600 hover:bg-green-700 text-white transition-colors"
+                      >
+                        Kaydet
+                      </button>
+                      <button
+                        onClick={handleUsernameCancel}
+                        className="px-2 py-1 text-xs rounded bg-gray-500 hover:bg-gray-600 text-white transition-colors"
+                      >
+                        İptal
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span>{user.username}</span>
+                      <button
+                        onClick={() => handleUsernameEdit(user)}
+                        className="px-2 py-1 text-xs rounded text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20 transition-colors"
+                      >
+                        Düzenle
+                      </button>
+                    </div>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   <select
@@ -110,15 +161,12 @@ function UserManagement() {
             ))}
           </tbody>
         </table>
-
         {users.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             Henüz kullanıcı bulunmuyor.
           </div>
         )}
       </div>
-
-      {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full p-6 border border-gray-200 dark:border-gray-700">
@@ -152,5 +200,4 @@ function UserManagement() {
     </div>
   );
 }
-
 export default UserManagement;

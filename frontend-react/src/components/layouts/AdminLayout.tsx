@@ -1,4 +1,4 @@
-import { useContext } from "react";
+﻿import { useContext } from "react";
 import { AuthContext } from "../auth/AuthContext";
 import { Navigate, Outlet, NavLink } from "react-router-dom";
 import {
@@ -10,7 +10,6 @@ import {
   HiUserGroup,
   HiTag,
 } from "react-icons/hi";
-
 export default function AdminLayout() {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
 
@@ -21,31 +20,24 @@ export default function AdminLayout() {
   const isAdmin = user?.role === "admin";
   const isEditor = user?.role === "editor";
   const canManageContent = isAdmin || isEditor;
-
   const menuItems = [
     { to: "/", icon: HiHome, label: "Ana Sayfa" },
     { to: "/movies", icon: HiFilm, label: "Filmler" },
     { to: "/series", icon: HiFilm, label: "Diziler" },
   ];
-
   const editorMenuItems = [
     ...menuItems,
     { to: "/admin/movies", icon: HiCog, label: "Film Yönetimi" },
     { to: "/admin/series", icon: HiCog, label: "Dizi Yönetimi" },
     { to: "/admin/genres", icon: HiTag, label: "Tür Yönetimi" },
   ];
-
-  // Admin için tüm yönetim (kullanıcı yönetimi dahil)
   const adminMenuItems = [
     ...editorMenuItems,
     { to: "/admin/users", icon: HiUserGroup, label: "Kullanıcı Yönetimi" },
   ];
-
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 h-14 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center justify-between">
-        {/* Logo - Sol */}
         <div className="flex items-center gap-6 flex-1">
           <div className="flex items-center gap-2">
             <HiFilm className="text-2xl text-purple-600" />
@@ -53,8 +45,6 @@ export default function AdminLayout() {
               SineDeck
             </span>
           </div>
-
-          {/* Navigation Links */}
           <nav className="hidden sm:flex items-center gap-2 flex-1">
             <div className="flex items-center gap-1">
               {menuItems.map((item) => (
@@ -100,8 +90,6 @@ export default function AdminLayout() {
             )}
           </nav>
         </div>
-
-        {/* User Info - Sağ */}
         <div className="flex items-center gap-3">
           <div className="hidden sm:block text-right">
             <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -121,8 +109,6 @@ export default function AdminLayout() {
           </button>
         </div>
       </header>
-
-      {/* Mobile Navigation */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
         <nav className="flex justify-around">
           {(isAdmin
@@ -149,8 +135,6 @@ export default function AdminLayout() {
           ))}
         </nav>
       </div>
-
-      {/* Main Content */}
       <div className="pt-14 pb-16 sm:pb-0 min-h-screen">
         <main className="p-6">
           <Outlet />

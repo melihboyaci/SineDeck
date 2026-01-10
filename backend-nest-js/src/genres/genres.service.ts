@@ -1,4 +1,4 @@
-import {
+﻿import {
   ConflictException,
   Injectable,
   NotFoundException,
@@ -8,7 +8,6 @@ import { UpdateGenreDto } from './dto/update-genre.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Genre } from './entities/genre.entity';
 import { Repository } from 'typeorm';
-
 @Injectable()
 export class GenresService {
   constructor(
@@ -29,7 +28,6 @@ export class GenresService {
     return this.genreRepo.save(genre);
   }
 
-  // async yazmadık çünkü find metodu zaten promise döndürüyor, eğer find gerçek veri döndürüyor olsaydı async kullanmamız gerekirdi
   findAll() {
     return this.genreRepo.find({ order: { name: 'ASC' } });
   }

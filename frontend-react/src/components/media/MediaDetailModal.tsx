@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import type { Movie } from "../../types/Movie";
 import type { Series } from "../../types/Series";
 import type { Season } from "../../types/Season";
@@ -35,7 +35,6 @@ function MediaDetailModal({
   const [showCollectionSelector, setShowCollectionSelector] = useState(false);
   const [loadingCollections, setLoadingCollections] = useState(false);
 
-  // Reset states when modal opens/closes or item changes
   useEffect(() => {
     if (!isOpen) {
       setShowCollectionSelector(false);
@@ -43,9 +42,9 @@ function MediaDetailModal({
   }, [isOpen]);
 
   const fetchCollections = async () => {
-    if (collections.length > 0) return; // Already loaded
-
+    if (collections.length > 0) return;
     setLoadingCollections(true);
+
     try {
       const response = await api.get("/collections");
       setCollections(response.data);
@@ -95,7 +94,6 @@ function MediaDetailModal({
         className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header with poster background */}
         <div className="relative h-64 md:h-80 bg-gray-800">
           {item.posterUrl ? (
             <>
@@ -111,16 +109,12 @@ function MediaDetailModal({
               <HiFilm className="text-8xl text-purple-400/30" />
             </div>
           )}
-
-          {/* Close button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors z-10"
           >
             <HiX className="text-xl" />
           </button>
-
-          {/* Add to Collection Button - Top Left */}
           <div className="absolute top-4 left-4 z-10">
             <div className="relative">
               <button
@@ -130,8 +124,6 @@ function MediaDetailModal({
                 <HiPlusCircle className="text-xl" />
                 <span className="text-sm font-medium">Koleksiyona Ekle</span>
               </button>
-
-              {/* Collection Dropdown */}
               {showCollectionSelector && (
                 <div className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden animation-fade-in">
                   <div className="p-3 border-b border-gray-100 dark:border-gray-700">
@@ -167,11 +159,8 @@ function MediaDetailModal({
               )}
             </div>
           </div>
-
-          {/* Title overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <div className="flex items-end gap-6">
-              {/* Poster thumbnail */}
               {item.posterUrl && (
                 <div className="hidden md:block w-32 h-48 rounded-lg overflow-hidden shadow-xl border-2 border-white/20 flex-shrink-0">
                   <img
@@ -181,13 +170,10 @@ function MediaDetailModal({
                   />
                 </div>
               )}
-
               <div className="flex-1">
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                   {item.title}
                 </h1>
-
-                {/* Meta info */}
                 <div className="flex flex-wrap items-center gap-4 text-gray-300 text-sm">
                   {isMovie && movie && (
                     <>
@@ -213,8 +199,6 @@ function MediaDetailModal({
                     </>
                   )}
                 </div>
-
-                {/* Genres */}
                 {item.genres && item.genres.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {item.genres.map((genre) => (
@@ -232,9 +216,7 @@ function MediaDetailModal({
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-20rem)]">
-          {/* Description */}
           {item.description && (
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
@@ -246,7 +228,6 @@ function MediaDetailModal({
             </div>
           )}
 
-          {/* Seasons & Episodes for Series */}
           {!isMovie &&
             series &&
             (series as Series & { seasons?: Season[] }).seasons && (
@@ -324,7 +305,6 @@ function MediaDetailModal({
               </div>
             )}
 
-          {/* No content message */}
           {!item.description &&
             (isMovie ||
               !(series as Series & { seasons?: Season[] }).seasons?.length) && (
@@ -338,5 +318,4 @@ function MediaDetailModal({
     </div>
   );
 }
-
 export default MediaDetailModal;

@@ -1,8 +1,7 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiArrowLeft } from "react-icons/hi";
 import type { IconType } from "react-icons";
-
 interface Props {
   title: string;
   subtitle?: string;
@@ -12,7 +11,6 @@ interface Props {
   backUrl?: string;
   action?: ReactNode;
 }
-
 export default function PageHeader({
   title,
   subtitle,
@@ -23,7 +21,6 @@ export default function PageHeader({
   action,
 }: Props) {
   const navigate = useNavigate();
-
   return (
     <div className="mb-6">
       {backUrl && (
@@ -34,7 +31,6 @@ export default function PageHeader({
           <HiArrowLeft /> Geri Dön
         </button>
       )}
-
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {Icon && (
@@ -51,7 +47,6 @@ export default function PageHeader({
             {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
           </div>
         </div>
-
         {action && <div>{action}</div>}
       </div>
     </div>

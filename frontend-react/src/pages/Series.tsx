@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import type { Series } from "../types/Series";
 import api from "../helper/api";
 import { HiFilm, HiPlay } from "react-icons/hi";
 import MediaCard from "../components/media/MediaCard";
 import MediaDetailModal from "../components/media/MediaDetailModal";
 import { LoadingSpinner, EmptyState } from "../components/ui";
-
 function SeriesPage() {
   const [series, setSeries] = useState<Series[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSeries, setSelectedSeries] = useState<Series | null>(null);
-
   const fetchSeriesDetail = async (id: number) => {
     try {
       const response = await api.get(`/series/${id}`);
@@ -19,7 +17,6 @@ function SeriesPage() {
       console.error("Dizi detayı yüklenemedi", error);
     }
   };
-
   const fetchSeries = async () => {
     try {
       const response = await api.get("/series");
@@ -30,18 +27,14 @@ function SeriesPage() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchSeries();
   }, []);
-
   if (loading) {
     return <LoadingSpinner message="Diziler yükleniyor..." />;
   }
-
   return (
     <div>
-      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <HiPlay className="text-3xl text-purple-600" />
@@ -51,8 +44,6 @@ function SeriesPage() {
         </div>
         <p className="text-gray-500">{series.length} dizi bulundu</p>
       </div>
-
-      {/* Series Grid */}
       {series.length === 0 ? (
         <EmptyState
           icon={HiPlay}
@@ -72,8 +63,6 @@ function SeriesPage() {
           ))}
         </div>
       )}
-
-      {/* Detail Modal */}
       <MediaDetailModal
         item={selectedSeries}
         type="series"
@@ -84,5 +73,4 @@ function SeriesPage() {
     </div>
   );
 }
-
 export default SeriesPage;

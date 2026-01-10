@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+﻿import { useEffect, useState, type FormEvent } from "react";
 import type { Genre } from "../../types/Genre";
 import api from "../../helper/api";
 import { toast } from "react-toastify";
@@ -10,19 +10,15 @@ import {
   Modal,
   Button,
 } from "../../components/ui";
-
 function GenreManagement() {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [genreIdToDelete, setGenreIdToDelete] = useState<number | null>(null);
-
-  // Add/Edit Modal
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingGenre, setEditingGenre] = useState<Genre | null>(null);
   const [formName, setFormName] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
   const fetchGenres = async () => {
     try {
       const response = await api.get("/genres");
@@ -33,37 +29,30 @@ function GenreManagement() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchGenres();
   }, []);
-
   const openAddModal = () => {
     setEditingGenre(null);
     setFormName("");
     setShowFormModal(true);
   };
-
   const openEditModal = (genre: Genre) => {
     setEditingGenre(genre);
     setFormName(genre.name);
     setShowFormModal(true);
   };
-
   const closeFormModal = () => {
     setShowFormModal(false);
     setEditingGenre(null);
     setFormName("");
   };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formName.trim()) return;
-
     setSubmitting(true);
     try {
       if (editingGenre) {
-        // Update
         await api.patch(`/genres/${editingGenre.id}`, { name: formName });
         toast.success("Tür güncellendi");
         setGenres(
@@ -72,7 +61,6 @@ function GenreManagement() {
           )
         );
       } else {
-        // Create
         const response = await api.post("/genres", { name: formName });
         toast.success("Tür eklendi");
         setGenres([...genres, response.data]);
@@ -84,7 +72,6 @@ function GenreManagement() {
       setSubmitting(false);
     }
   };
-
   const handleDelete = async () => {
     if (!genreIdToDelete) return;
     try {
@@ -97,11 +84,9 @@ function GenreManagement() {
       toast.error("Silme işlemi başarısız.");
     }
   };
-
   if (loading) {
     return <LoadingSpinner message="Türler yükleniyor..." />;
   }
-
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader
@@ -117,8 +102,6 @@ function GenreManagement() {
           </button>
         }
       />
-
-      {/* Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -159,15 +142,12 @@ function GenreManagement() {
             ))}
           </tbody>
         </table>
-
         {genres.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             Henüz tür bulunmuyor.
           </div>
         )}
       </div>
-
-      {/* Add/Edit Modal */}
       {showFormModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full p-6 border border-gray-200 dark:border-gray-700">
@@ -216,8 +196,6 @@ function GenreManagement() {
           </div>
         </div>
       )}
-
-      {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full p-6 border border-gray-200 dark:border-gray-700">
@@ -250,5 +228,4 @@ function GenreManagement() {
     </div>
   );
 }
-
 export default GenreManagement;

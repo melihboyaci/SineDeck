@@ -1,6 +1,5 @@
-import { HiExclamation } from "react-icons/hi";
+﻿import { HiExclamation } from "react-icons/hi";
 import Button from "./Button";
-
 interface Props {
   isOpen: boolean;
   title: string;
@@ -11,7 +10,6 @@ interface Props {
   onCancel: () => void;
   variant?: "danger" | "warning";
 }
-
 export default function ConfirmDialog({
   isOpen,
   title,
@@ -23,7 +21,6 @@ export default function ConfirmDialog({
   variant = "danger",
 }: Props) {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-sm p-6 shadow-xl border border-gray-200 dark:border-gray-700">
@@ -50,7 +47,6 @@ export default function ConfirmDialog({
             </p>
           </div>
         </div>
-
         <div className="flex gap-3">
           <Button variant="secondary" fullWidth onClick={onCancel}>
             {cancelText}

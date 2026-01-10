@@ -1,4 +1,4 @@
-import {
+﻿import {
   BadRequestException,
   Injectable,
   NotFoundException,
@@ -11,21 +11,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Genre } from 'src/genres/entities/genre.entity';
 import { SetMovieGenresDto } from './dto/set-movie-genres.dto';
 import { Notification } from 'rxjs';
-
 @Injectable()
 export class MoviesService {
-  //movieReposunu enjekte ettik bu sayede veritabanı işlemlerini yapabiliriz
   constructor(
     @InjectRepository(Movie)
-    private readonly movieRepo: Repository<Movie>, //private: başka yerden erişilemesin diye, readonly: sadece constructor içinde atanabilir, sonrasında değiştirilemez
-
+    private readonly movieRepo: Repository<Movie>,
     @InjectRepository(Genre)
     private readonly genreRepo: Repository<Genre>,
   ) {}
 
   async create(createMovieDto: CreateMovieDto) {
-    //neden async: çünkü veritabanı işlemleri asenkron işlemlerdir.
-    const movie = this.movieRepo.create(createMovieDto); //create entitiy nesnesi üretir, save DB'ye insert/update yapar.
+    const movie = this.movieRepo.create(createMovieDto);
     return this.movieRepo.save(movie);
   }
 
@@ -45,30 +41,26 @@ export class MoviesService {
     if (!movie) {
       throw new NotFoundException(`Movie ${id} not found`);
     }
+
     return movie;
-    //where işlemi yapar
-    //return this.movieRepo.findOne({where:{id}}); //aynı işi yapar
   }
 
   async update(id: number, updateMovieDto: UpdateMovieDto) {
-    const movie = await this.findOne(id); //yoksa NotFoundException fırlatır
-
-    Object.assign(movie, updateMovieDto); //sadece alanları yazar
-    return this.movieRepo.save(movie); //güncellenmiş movie nesnesini DB'ye kaydeder
+    const movie = await this.findOne(id);
+    Object.assign(movie, updateMovieDto);
+    return this.movieRepo.save(movie);
   }
 
   async remove(id: number) {
-    const movie = await this.findOne(id); //yoksa NotFoundException fırlatır
-    await this.movieRepo.delete(id); //delete vs remove:
-    return { deleted: true, id }; //silindi bilgisi döner
+    const movie = await this.findOne(id);
+    await this.movieRepo.delete(id);
+    return { deleted: true, id };
   }
 
   async setGenres(movideId: number, dto: SetMovieGenresDto) {
     const movie = await this.movieRepo.findOne({
       where: { id: movideId },
-      relations: { genres: true }, //SQL'deki karşılığı: LEFT JOIN, eğer bunu yapmazsak movie.genres undefined olur
-
-      //Özetle: relations: { genres: true } ifadesi, "Bana filmi getirirken, o filme yapıştırılmış olan türlerin listesini de paket halinde getir" demektir.
+      relations: { genres: true },
     });
 
     if (!movie) {

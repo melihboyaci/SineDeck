@@ -1,6 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+﻿import { ApiProperty } from '@nestjs/swagger';
 import { ArrayNotEmpty, IsArray, IsInt } from 'class-validator';
-
 export class SetMovieGenresDto {
   @ApiProperty({
     example: [1, 2, 3],
@@ -8,6 +7,6 @@ export class SetMovieGenresDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @IsInt({ each: true }) //her bir elemanın number (integer) olduğunu doğrular
-  genreIds: number[]; //bunu yapmamızın sebebi frontendden sadece idleri alacağız
+  @IsInt({ each: true }) 
+  genreIds: number[]; 
 }

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+﻿import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../helper/api";
@@ -12,12 +12,10 @@ import {
   Button,
   PosterUpload,
 } from "../../components/ui";
-
 function AddMovie() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedGenreIds, setSelectedGenreIds] = useState<number[]>([]);
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -25,18 +23,15 @@ function AddMovie() {
     releaseYear: String(new Date().getFullYear()),
     posterUrl: "",
   });
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       const response = await api.post("/movies", {
         title: formData.title,
@@ -45,13 +40,11 @@ function AddMovie() {
         releaseYear: Number(formData.releaseYear),
         ...(formData.posterUrl ? { posterUrl: formData.posterUrl } : {}),
       });
-
       if (selectedGenreIds.length > 0) {
         await api.patch(`/movies/${response.data.id}/genres`, {
           genreIds: selectedGenreIds,
         });
       }
-
       toast.success("Film başarıyla eklendi");
       navigate("/admin/movies");
     } catch (error) {
@@ -61,7 +54,6 @@ function AddMovie() {
       setLoading(false);
     }
   };
-
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader
@@ -70,7 +62,6 @@ function AddMovie() {
         icon={HiFilm}
         backUrl="/admin/movies"
       />
-
       <FormCard onSubmit={handleSubmit}>
         <FormInput
           id="title"
@@ -80,7 +71,6 @@ function AddMovie() {
           value={formData.title}
           onChange={handleChange}
         />
-
         <FormTextarea
           id="description"
           label="Film Özeti"
@@ -90,7 +80,6 @@ function AddMovie() {
           value={formData.description}
           onChange={handleChange}
         />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             id="director"
@@ -109,7 +98,6 @@ function AddMovie() {
             onChange={handleChange}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
             Türler
@@ -119,7 +107,6 @@ function AddMovie() {
             onChange={setSelectedGenreIds}
           />
         </div>
-
         <PosterUpload
           value={formData.posterUrl}
           onChange={(url) =>
@@ -127,7 +114,6 @@ function AddMovie() {
           }
           label="Afiş"
         />
-
         <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button
             type="button"
@@ -145,5 +131,4 @@ function AddMovie() {
     </div>
   );
 }
-
 export default AddMovie;

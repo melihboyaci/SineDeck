@@ -1,4 +1,4 @@
-import {
+﻿import {
   BadRequestException,
   Injectable,
   NotFoundException,
@@ -10,27 +10,23 @@ import { Series } from './entities/series.entity';
 import { In, Repository } from 'typeorm';
 import { Genre } from 'src/genres/entities/genre.entity';
 import { SetSeriesGenresDto } from './dto/set-series-genres.dto';
-
 @Injectable()
 export class SeriesService {
   constructor(
     @InjectRepository(Series)
     private readonly seriesRepo: Repository<Series>,
-
     @InjectRepository(Genre)
     private readonly genreRepo: Repository<Genre>,
   ) {}
 
   async create(createSeriesDto: CreateSeriesDto) {
     const newSeries = this.seriesRepo.create(createSeriesDto);
-    //create() nesneyi hazırlar, save() veritabanına yazar
     return await this.seriesRepo.save(newSeries);
   }
 
   async findAll() {
     return await this.seriesRepo.find({
       relations: ['seasons', 'seasons.episodes', 'genres'],
-      //diziyi çekerken sezonları ve türleri de getir
     });
   }
 
@@ -38,11 +34,12 @@ export class SeriesService {
     const series = await this.seriesRepo.findOne({
       where: { id },
       relations: ['seasons', 'seasons.episodes', 'genres'],
-      //detayda sezonları, bölümleri ve türleri getir
     });
+
     if (!series) {
       throw new NotFoundException(`Series ${id} not found`);
     }
+
     return series;
   }
 
